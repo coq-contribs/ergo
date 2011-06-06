@@ -36,6 +36,7 @@ CAMLP4LIB:=$(shell $(CAMLP4BIN)$(CAMLP4) -where)
 ##########################
 
 OCAMLLIBS:=-I src\
+  -I tests\
   -I ../Containers/src\
   -I ../Nfix/src\
   -I ../Counting/src
@@ -64,6 +65,7 @@ COQSRCLIBS:=-I $(COQLIB)/kernel -I $(COQLIB)/lib \
   -I $(COQLIB)/plugins/syntax \
   -I $(COQLIB)/plugins/xml
 COQLIBS:=-I src\
+  -I tests\
   -I ../Containers/src\
   -I ../Nfix/src\
   -I ../Counting/src -R theories Ergo\
