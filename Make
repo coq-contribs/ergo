@@ -1,0 +1,63 @@
+-I src
+-I tests
+-R theories Ergo
+-I ../Containers/src
+-R ../Containers/theories Containers
+-I ../Nfix/src
+-R ../Nfix/theories Nfix
+-I ../Counting/src
+-R ../Counting/theories Counting
+-custom "$(CAMLOPTLINK) $(ZDEBUG) $(ZFLAGS) -shared -o src/ergo_plugin.cmxs src/arith.cmx src/ergo.cmx src/ergo_plugin_mod.cmx" "src/arith.cmx src/ergo.cmx src/ergo_plugin_mod.cmx" src/ergo_plugin.cmxs
+-custom "$(CAMLLINK) -g -a -o src/ergo_plugin.cma src/arith.cmo src/ergo.cmo src/ergo_plugin_mod.cmo" "src/arith.cmo src/ergo.cmo src/ergo_plugin_mod.cmo" src/ergo_plugin.cma
+-custom "$(COQBIN)coqc $(COQDEBUG) $(COQFLAGS) $*" "%.v $(ERGO_PLUGINOPT) $(ERGO_PLUGIN)" "%.vo %.glob"
+ERGO_PLUGIN = "src/ergo_plugin.cma"
+ERGO_PLUGINOPT = "src/ergo_plugin.cmxs"
+COQDOC = "$(COQBIN)coqdoc -interpolate -utf8"
+CAMLP4OPTIONS = "-loc loc"
+src/arith.ml
+src/ergo.ml
+src/ergo.mli
+src/ergo_plugin_mod.ml
+theories/Adequation.v
+theories/AllInstances.v
+theories/AltErgo.v
+theories/CCX.v
+theories/CNFLazyCommon.v
+theories/CNFLazyN.v
+theories/CNFLazy.v
+theories/Cnf.v
+theories/CPolynoms.v
+theories/DiagProd.v
+theories/Diff.v
+theories/DistrNeg.v
+theories/DoubleNegUtils.v
+theories/Dpll.v
+theories/EnvLazy.v
+theories/Env.v
+theories/Ergo.v
+theories/FoldProps.v
+theories/Index.v
+theories/Lexico.v
+theories/Literal.v
+theories/LLazy.v
+theories/ModelsRingExt.v
+theories/Rational.v
+theories/SatCaml.v
+theories/Sat.v
+theories/Semantics.v
+theories/SemLazy.v
+theories/TacticLazy.v
+theories/TermUtils.v
+theories/Term.v
+theories/TheoryArith.v
+theories/Theory.v
+theories/Uf.v
+theories/Use.v
+tests/AltDemo.v
+tests/Demo.v
+tests/EinsteinEasy2.v
+tests/EinsteinEasy.v
+tests/GeneratorsEq.v
+tests/GeneratorsNG.v
+tests/Generators.v
+tests/TestErgo.v

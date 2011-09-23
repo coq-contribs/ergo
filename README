@@ -1,0 +1,64 @@
+Ergo: a Coq plugin for reification of term with arbitrary signature
+========================================================
+Copyright 2010 Stéphane Lescuyer <stephane.lescuyer@inria.fr>
+
+Features
+========
+
+This plugin provides a couple of tactics for the reification of Coq
+formulae with terms in arbitrary signature. This extension is limited
+to non-dependent types.  Here are some of the tactics provided:
+
+ - [build_conjunction id]
+  Builds the conjunction of all hypotheses of type [Prop] in the
+  context, and adds the resulting proposition to the context with the
+  name [id].
+
+ - [ergo_reify f reif v]
+  This tactic reifies the hypothesis with name [f] in the context, in
+  a reified formula [reif] and stores the various varmaps for the
+  interpretation of term and propositional variables in [v].
+
+ - [valid_prepare]
+  Checks that [Coq.Logic.Classical_Prop] is imported, in other words that
+  the user is working with classical logic, and applies double negation
+  to the goal. The only interest of this tactic is to be used with the
+  reflexive [ergo] tactic since it provides a comprehensive error message.
+
+Also, an extra vernacular command for debug purposes is provided:
+ - [PrintAst t]
+ Prints the structure of the internal AST of term [t].
+
+Files
+=====
+
+The archive has 3 subdirectories:
+src/ contains the code of the plugin in ergo.ml and
+     a support file for building the plugin.
+
+theories/ contains Term.v for the definition of reified terms, and
+	  Ergo.v used to load the plugin on the Coq side.
+
+tests/ just demonstrates a use of the plugin
+
+Installation
+============
+
+First, you should have coqc, ocamlc and make in your path.
+Then simply do:
+
+# coq_makefile -f make > Makefile
+
+To generate a makefile from the description in Make, then [make].
+This will consecutively build the plugin, the supporting
+theories and the test file.
+
+You can then either install the plugin with
+
+# sudo ./install.sh
+
+or leave it in its current directory and to be able to import it
+from anywhere in Coq, simply add the following to ~/.coqrc:
+
+Add Rec LoadPath "path_to_ergo/theories" as Ergo.
+Add ML Path "path_to_ergo/src".

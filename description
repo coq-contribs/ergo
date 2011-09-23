@@ -1,0 +1,10 @@
+Name: Ergo
+Title: Ergo: a Coq plugin for reification of term with arbitrary signature
+Author: Stéphane Lescuyer
+Institution: INRIA Saclay - Île-de-France, ProVal project
+Description: This library provides a tactic that performs SMT solving (SAT + congruence closure + arithmetic).
+Keywords: reflexive decision procedure, satisfiability modulo theories
+Category: Computer Science/Decision Procedures and Certified Algorithms/Decision procedures
+Require: Containers
+Require: Nfix
+Require: Counting
