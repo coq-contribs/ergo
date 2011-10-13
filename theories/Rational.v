@@ -26,5 +26,5 @@ Next Obligation.
   rewrite <- Qcgt_alt in H; exact H.
 Qed.
 Definition rational_OT : OrderedType Qc :=
-  @SOT_as_OT _ _ _ rational_UOT.
+  @SOT_as_OT _ _ rational_UOT.
 Existing Instance rational_OT.

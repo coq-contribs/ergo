@@ -643,7 +643,7 @@ let quote_everything vm_name gl =
 	       mk_teq vtypes_name vsymbols_name cra crb |]) in
       tclTHEN (assert_by (Names.Name r) cut byapp)
 	(tclTHEN (Equality.general_rewrite_in
-		    true Termops.all_occurrences false id (mkVar r) false)
+		    true Termops.all_occurrences false true id (mkVar r) false)
 	   (clear [r]))
   in
   let rews (id, _, rs) = List.map (rewtactic id) rs in

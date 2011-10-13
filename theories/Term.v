@@ -154,8 +154,8 @@ Definition cst_equal (d d' : arith_domain) :=
     | DomainNat, DomainNat => beq_nat
     | DomainPos, DomainPos =>
       fun p p' => match Pcompare p p' Eq with Eq => true | _ => false end
-    | DomainN, DomainN => Neq_bool
-    | DomainZ, DomainZ => Zeq_bool
+    | DomainN, DomainN => N.eqb
+    | DomainZ, DomainZ => Z.eqb
     | DomainQ, DomainQ => Qc_eq_bool
     | _, _ => fun  _ _ => false
   end.

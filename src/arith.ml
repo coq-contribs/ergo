@@ -11,34 +11,36 @@ let coq_pred = gen_in_peano "pred"
 let coq_plus = gen_in_peano "plus"
 let coq_mult = gen_in_peano "mult"
 
-let gen_in_pos t = lazy (gen_constant "BinPos" ["NArith"; "BinPos"] t)
-let coq_positive = gen_in_pos "positive"
-let coq_xO = gen_in_pos "xO"
-let coq_xI = gen_in_pos "xI"
-let coq_xH = gen_in_pos "xH"
-let coq_Psucc = gen_in_pos "Psucc"
-let coq_P_of_succ_nat = gen_in_pos "P_of_succ_nat"
-let coq_Pdouble_minus_one = gen_in_pos "Pdouble_minus_one"
-let coq_Ppred = gen_in_pos "Ppred"
-let coq_Pplus = gen_in_pos "Pplus"
-let coq_Pmult = gen_in_pos "Pmult"
+let gen_in_nums t = lazy (gen_constant "BinNums" ["Numbers"; "BinNums"] t)
 
-let gen_in_N t = lazy (gen_constant "BinNat" ["NArith"; "BinNat"] t)
-let coq_N = gen_in_N "N"
-let coq_N0 = gen_in_N "N0"
-let coq_Npos = gen_in_N "Npos"
-let coq_Nplus = gen_in_N "Nplus"
-let coq_Nmult = gen_in_N "Nmult"
+let gen_in_pos t = lazy (gen_constant "BinPos" ["PArith"; "BinPos";"Pos"] t)
+let coq_positive = gen_in_nums "positive"
+let coq_xO = gen_in_nums "xO"
+let coq_xI = gen_in_nums "xI"
+let coq_xH = gen_in_nums "xH"
+let coq_Psucc = gen_in_pos "succ"
+let coq_P_of_succ_nat = gen_in_pos "of_succ_nat"
+let coq_Pdouble_minus_one = gen_in_pos "pred_double"
+let coq_Ppred = gen_in_pos "pred"
+let coq_Pplus = gen_in_pos "add"
+let coq_Pmult = gen_in_pos "mul"
 
-let gen_in_Z t = lazy (gen_constant "BinInt" ["ZArith"; "BinInt"] t)
-let coq_Z = gen_in_Z "Z"
-let coq_Z0 =  gen_in_Z "Z0"
-let coq_Zpos = gen_in_Z "Zpos"
-let coq_Zneg = gen_in_Z "Zneg"
-let coq_Zplus = gen_in_Z "Zplus"
-let coq_Zminus = gen_in_Z "Zminus"
-let coq_Zopp = gen_in_Z "Zopp"
-let coq_Zmult = gen_in_Z "Zmult"
+let gen_in_N t = lazy (gen_constant "BinNat" ["NArith"; "BinNat";"N"] t)
+let coq_N = gen_in_nums "N"
+let coq_N0 = gen_in_nums "N0"
+let coq_Npos = gen_in_nums "Npos"
+let coq_Nplus = gen_in_N "add"
+let coq_Nmult = gen_in_N "mul"
+
+let gen_in_Z t = lazy (gen_constant "BinInt" ["ZArith"; "BinInt";"Z"] t)
+let coq_Z = gen_in_nums "Z"
+let coq_Z0 =  gen_in_nums "Z0"
+let coq_Zpos = gen_in_nums "Zpos"
+let coq_Zneg = gen_in_nums "Zneg"
+let coq_Zplus = gen_in_Z "add"
+let coq_Zminus = gen_in_Z "sub"
+let coq_Zopp = gen_in_Z "opp"
+let coq_Zmult = gen_in_Z "mul"
 
 (** constants that could be added **)
 (* Zdouble_plus_one: Z -> Z *)

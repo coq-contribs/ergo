@@ -95,7 +95,7 @@ Section WithVars.
      faster to check than [equiv] and convenient for computations.
      *)
   Definition MapQ_OT : OrderedType (Map[vars, Q]) :=
-    (@SOT_as_OT _ _ _ FMap_SpecificOrderedType).
+    (@SOT_as_OT _ _ FMap_SpecificOrderedType).
   Existing Instance MapQ_OT.
   Definition poly_OT : OrderedType poly :=
     prod_OrderedType _ MapQ_OT.
