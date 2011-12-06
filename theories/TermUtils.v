@@ -173,7 +173,7 @@ Section Symbol_as_UOT.
       [ty'' t''|d'' c''|e'' op''];
       try (intro; inversion_clear 0;
         intro; inversion_clear 0;
-          constructor solve_by_trans_modulo);
+          constructor (solve_by_trans_modulo));
       intros;
         try solve [constructor];
           try solve [inversion H | inversion H0 |
@@ -181,15 +181,15 @@ Section Symbol_as_UOT.
     destruct d; destruct d'; destruct d''; try solve
       [constructor | inversion H | inversion H0].
     inversion_clear H; inversion_clear H0; repeat dep_invert;
-      constructor solve_by_trans_modulo.
+      constructor (solve_by_trans_modulo).
     inversion_clear H; inversion_clear H0; repeat dep_invert;
-      constructor solve_by_trans_modulo.
+      constructor (solve_by_trans_modulo).
     inversion_clear H; inversion_clear H0; repeat dep_invert;
-      constructor solve_by_trans_modulo.
+      constructor (solve_by_trans_modulo).
     inversion_clear H; inversion_clear H0; repeat dep_invert;
-      constructor solve_by_trans_modulo.
+      constructor (solve_by_trans_modulo).
     inversion_clear H; inversion_clear H0; repeat dep_invert;
-      constructor solve_by_trans_modulo.
+      constructor (solve_by_trans_modulo).
   Qed.
   Property symbol_lt_irrefl :
     forall s s', symbol_lt s s' -> s = s' -> False.
@@ -221,19 +221,19 @@ Section Symbol_as_UOT.
   Property symbol_cmp_spec : 
     forall x y, compare_spec (@Logic.eq _) symbol_lt x y (symbol_cmp x y).
   Proof.
-    destruct x; destruct y; simpl; try (constructor (constructor auto)).
+    destruct x; destruct y; simpl; try (constructor (constructor (auto))).
 
     destruct (compare_dec ty_idx ty_idx0);
-      try constructor (constructor auto).
+      try constructor (constructor (auto)).
     destruct (compare_dec t_idx t_idx0);
       try constructor ((constructor (solve [auto])) || congruence).
 
-    destruct dom; destruct dom0; simpl; try (constructor (constructor auto));
-      set (Hc := compare_dec z z0); inversion Hc; 
+    destruct dom; destruct dom0; simpl; try (constructor (constructor (auto)));
+      set (Hc := compare_dec z z0); inversion Hc;
         constructor ((constructor (solve [auto])) || congruence).
 
     destruct (compare_dec dom dom0);
-      try constructor (constructor  auto).
+      try constructor (constructor (auto)).
     destruct (compare_dec op op0);
       try constructor ((constructor (solve [auto])) || congruence).
   Qed.

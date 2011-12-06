@@ -580,7 +580,7 @@ Proof.
   destruct (eq_dec (Some t) (Some t')).
   inversion H; subst. unfold is_compare; rewrite (elim_compare_eq H2).
   rewrite H; apply Qplus_0_l.
-  destruct (eq_dec t t'). contradiction H; constructor auto. reflexivity.
+  destruct (eq_dec t t'). contradiction H; constructor (auto). reflexivity.
   unfold is_compare; rewrite (elim_compare_gt (x:=Some t) (y:=None)).
   rewrite Hadd, Hcancel_coef; reflexivity.
   constructor.
@@ -669,7 +669,7 @@ Proof.
   destruct (eq_dec (Some k) (Some t)).
   inversion H; subst; unfold is_compare; rewrite elim_compare_eq; auto.
   apply Qmult_0_r.
-  destruct (eq_dec k t). contradiction H; constructor auto.
+  destruct (eq_dec k t). contradiction H; constructor (auto).
   rewrite 2Hsub; red; field; rewrite <- Hsub; assumption.
   unfold is_compare; rewrite elim_compare_gt; [|constructor].
   rewrite Hmult, Hcancel_coef, 2Hsub; red; field; rewrite <- Hsub; assumption.
@@ -1085,13 +1085,13 @@ Section ZEntailment.
     M |= u = [0] -> M |= t = t [+] u.
   Proof.
     intros; transitivity (t [+] [0]). mring. 
-    symmetry; apply models_eq_congr; repeat (constructor auto).
+    symmetry; apply models_eq_congr; repeat (constructor (auto)).
   Qed.
   Remark tmult_0_equal : forall t u,
     M |= u = [0] -> M |= t [*] u = [0].
   Proof.
     intros; transitivity (t [*] [0]).
-    apply models_eq_congr; repeat (constructor auto).
+    apply models_eq_congr; repeat (constructor (auto)).
     mring.
   Qed.
   Remark push_addk : forall t u v, 
@@ -1253,7 +1253,7 @@ Section ZEntailment.
       assert (Hz := His_const None); unfold R0 in Hz.
       rewrite !add_const_co, !P0_co in Hz.
       rewrite !Qplus_0_l, Qmult_1_l in Hz.
-      constructor auto.
+      constructor (auto).
       contradiction His_const; intro z; unfold R0; destruct z;
         rewrite !add_const_co, !P0_co; red; ring.
     Qed.
@@ -1645,8 +1645,8 @@ Section ZEntailment.
     destruct (MapFacts.In_dec m1 k0).
     destruct i as [z Hz].
     symmetry; rewrite MapFacts.fold_Add.
-    instantiate (1 := (remove k0 m1));
-      instantiate (1 := z%Q); instantiate (1 := k0).
+    instantiate (1 := (remove k0 m1)).
+      instantiate (1 := z%Q). instantiate (1 := k0).
     destruct (eq_dec (z + k * e) 0).
     unfold G at 1 3; symmetry.
     rewrite (H0 (remove k0 m1)).
@@ -1696,8 +1696,8 @@ Section ZEntailment.
       intro abs; apply H5; rewrite MapFacts.remove_in_iff; tauto.
 
     symmetry; rewrite MapFacts.fold_Add.
-    instantiate (1 := (remove k0 rm));
-      instantiate (1 := (z + k * e)%Q); instantiate (1 := k0).
+    instantiate (1 := (remove k0 rm)).
+      instantiate (1 := (z + k * e)%Q). instantiate (1 := k0).
     assert (IH : M |= fold G (remove k0 rm) ([0]) =
       fold G (remove k0 m1) ([0])[+][Qfloor k][*]a); [apply H0|]; clear H0.
     intros; apply HisZ1 with v; eapply remove_3; apply H0.
@@ -2395,7 +2395,7 @@ Section ZEntailment.
     transitivity v'. exact IH.
     transitivity ([m] [*] (b [-] b)); [| mring].
     apply models_eq_congr; do 2 constructor; auto; [|constructor].
-    apply models_eq_congr; repeat (constructor auto).
+    apply models_eq_congr; repeat (constructor (auto)).
     (* -- Subst *)
     set (ra := f (make a)) in *; set (rb := f (make b)) in *.
     destruct (find_multiple_poly P) as [m [Hm0 [Hm [mP HmP]]]].
@@ -2537,9 +2537,9 @@ Module ModelsAsRing.
     refine (implyX_entails M _ _ E u v H H0).
     constructor; intros; unfold models_eq, model_as_fun, 
       LLazy.LLAZY.interp, LLazy.LLAZY.RAW.interp; simpl;
-        try (apply ModelsRingExt.mext_rule; constructor auto);
+        try (apply ModelsRingExt.mext_rule; constructor (auto));
       apply ModelsRingExt.mext_sym; 
-        apply ModelsRingExt.mext_rule; constructor auto.
+        apply ModelsRingExt.mext_rule; constructor (auto).
     exact (ModelsRingExt.eq_integral M).
   Qed.
 End ModelsAsRing.

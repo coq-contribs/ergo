@@ -278,13 +278,17 @@ Section WithTheorySpecs.
         | None => MapInterface.find t m
       end.
   Property merge_touched_find :
-    forall m p P t, 
+    forall m p P, 
+    merge_touched_spec_2 m p P m (merge_touched m p P).
+(* TODO : Why does this expanded version of the statement take forever to typecheck ?!
       MapInterface.find t (fst (merge_touched m p P)) ===
       match MapInterface.find t m with
         | Some r => Some (subst p P r)
         | None => MapInterface.find t m
       end.
+*)
   Proof.
+    unfold merge_touched_spec_2.
     intros m p P; apply (@MapFacts.fold_rec_bis _ _ _ _ _ _
       (merge_touched_spec_2 m p P)).
     (* - morphism *)
@@ -338,7 +342,7 @@ Section WithTheorySpecs.
     congruent_spec m a b (congruent m a b).
   Proof.
     intros; unfold congruent; destruct (eq_dec (m a) (m b));
-      constructor auto.
+      constructor (auto).
   Qed.
 
   (* About range *)  

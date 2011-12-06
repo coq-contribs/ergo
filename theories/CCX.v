@@ -473,8 +473,8 @@ Module RAWCCX (Import T : THEORY).
           end
       end.
     Proof.
-      intros; subst; revert teq2; apply merge_decreases.
       exact guarded_wf_lt.
+      intros; subst; revert teq2; apply merge_decreases.
     Defined.
     Global Opaque clean_up.
 (*     Definition clean_up (e : t) : Exception t := *)
@@ -595,7 +595,7 @@ Module RAWCCX (Import T : THEORY).
     Proof.
       intros M I0; induction I0; intro HM; inversion HM; subst; simpl.
       constructor.
-      constructor auto.
+      constructor (auto).
       auto.
     Qed.
 
@@ -619,7 +619,7 @@ Module RAWCCX (Import T : THEORY).
       transitivity (make t1).
       apply implyX_weaken; symmetry; apply IHE; reflexivity.
       transitivity (make t2).
-      apply implyX_Ax; constructor auto.
+      apply implyX_Ax; constructor (auto).
       apply implyX_weaken; apply IHE; reflexivity.
     Qed.
 
@@ -637,7 +637,7 @@ Module RAWCCX (Import T : THEORY).
         forall M, models_list M (eqns_of I) -> models_list M F.
     Proof.
       intros d i f [eqns _ Heqns Hiter] Hj.
-      induction Hj; intros M HM; constructor auto.
+      induction Hj; intros M HM; constructor (auto).
       apply models_eq_congr.
       assert (Heqn := Heqns M HM); clear Heqns.
       assert (IHj := IHHj M HM); clear IHHj.
@@ -645,7 +645,7 @@ Module RAWCCX (Import T : THEORY).
       constructor.
       discriminate. discriminate.
       destruct (eq_dec (d a) (d t0)); try discriminate H.
-      constructor auto.
+      constructor (auto).
       refine (@implyX_entails Th ThSpecs eqns _ _ _ M Heqn).
       apply implyX_Trans with (d a).
       apply iter_correct; rewrite <- Hiter; reflexivity.
@@ -927,7 +927,7 @@ Module RAWCCX (Import T : THEORY).
       intros; apply Uf.add_conservative; auto.
       rewrite Uf.range_add; apply add_s_m; auto.
       auto using find_add_equations_extend.
-      destruct e; constructor auto. reflexivity.
+      destruct e; constructor (auto). reflexivity.
       destruct (H0 e).
       destruct (H (mk_env G' D' (N e) F' (I e))).
       simpl; constructor; auto.
@@ -950,7 +950,7 @@ Module RAWCCX (Import T : THEORY).
     Lemma justify_add : forall `{@Uf.Wf Th d} a F,
       justify (Uf.add d a) F <-> justify d F.
     Proof.
-      intros; split; intro J; induction J; simpl in *; constructor auto.
+      intros; split; intro J; induction J; simpl in *; constructor (auto).
       rewrite lcongr_add in H0; assumption.
       rewrite lcongr_add; assumption.
     Qed.
@@ -1248,7 +1248,7 @@ Module RAWCCX (Import T : THEORY).
     Proof.
       intros D0 I0 a b [eqns Hin Heqns Hiter] Heq; exists ((a, b)::eqns).
       intro; simpl; intuition.
-      intros M HM; inversion HM; constructor auto.
+      intros M HM; inversion HM; constructor (auto).
       intro z; simpl.
       assert (Ha := symmetry (Hiter a)). assert (Hb := symmetry (Hiter b)).
       assert (Hz := symmetry (Hiter z)).
@@ -1257,7 +1257,7 @@ Module RAWCCX (Import T : THEORY).
       inversion_clear Ha; inversion_clear Hb; inversion_clear Hz; subst.
       assert (R := transitivity (transitivity H Heq) (symmetry H0)).
       rewrite ((proj1 (solve_trivial _ _)) R).
-      constructor auto.
+      constructor (auto).
     Qed.
 (*     Lemma coincides_weaken' :  *)
 (*       forall D I a b, coincides D I -> equivX (D a) (D b) ->  *)
@@ -1265,7 +1265,7 @@ Module RAWCCX (Import T : THEORY).
 (*     Proof. *)
 (*       intros D0 I0 a b [eqns Hin Heqns Hiter] Heq; exists ((a, b)::eqns). *)
 (*       intro; simpl; intuition. *)
-(*       intros M HM; inversion HM; constructor auto. *)
+(*       intros M HM; inversion HM; constructor (auto). *)
 (*       intro z; simpl. *)
 (*       assert (Ha := symmetry (Hiter a)). assert (Hb := symmetry (Hiter b)). *)
 (*       assert (Hz := symmetry (Hiter z)). *)
@@ -1276,7 +1276,7 @@ Module RAWCCX (Import T : THEORY).
 (* (*       destruct (iter eqns (make b)) as [rb|]; inversion_clear Hb; subst. *) *)
 (* (*       destruct (iter eqns (make z)) as [rz|]; inversion_clear Hz; subst. *) *)
 (*       rewrite solve_trivial'. *)
-(*       constructor auto. *)
+(*       constructor (auto). *)
 (*       rewrite H, H0; auto. *)
 (*     Qed. *)
     Lemma Ncoincides_weaken : 
@@ -1339,7 +1339,7 @@ Module RAWCCX (Import T : THEORY).
       apply (c'merge' Dwf0 (refl_equal _) Dcorrect0).
       constructor; auto.
       (* -- General case *)
-      constructor auto; simpl in *.
+      constructor (auto); simpl in *.
       (* --- justify *)
       intros wf HJ; assert (HJ' := justify_merge p P HJ).
       rewrite HpP in HJ'; exact (find_congr_equations_correct _ _ _ HJ').
@@ -1616,7 +1616,7 @@ Module RAWCCX (Import T : THEORY).
       Wf (mk_env (G e') (D e') (N e') (F e') ((Disequation a b)::(I e'))).
     Proof.
       intros; decide diff in H2; inversion H2; 
-        destruct H; constructor auto.
+        destruct H; constructor (auto).
       apply Diff.Wf_separate.
       destruct Dcorrect0 as [eqns]; exists eqns; auto.
       apply Ncoincides_separate; assumption.

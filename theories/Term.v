@@ -947,7 +947,7 @@ Qed.
 (*     set (Z := interp vtypes v t (type_of vtypes v t)); clearbody Z; revert Z. *)
 (*     destruct (has_type vtypes v t (type_of vtypes v t)) as [ ]_eqn:Hht. *)
 (*     intros; apply C1 with (refl_equal _); auto. *)
-(*     intros; constructor auto. *)
+(*     intros; constructor (auto). *)
 (*   Qed. *)
 (*   Tactic Notation "decide" "int" := *)
 (*     match goal with *)

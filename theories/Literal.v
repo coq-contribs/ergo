@@ -1,7 +1,9 @@
 (** This file defines the module type of literals. *)
-Require Import Sets.
-Require Import SetListInstance.
+Require Import Sets SetListInstance.
 Require Export Quote Ergo OrderedType SetoidList.
+
+(* AVL by default *)
+Existing Instance SetAVLInstance.SetAVL_FSet.
 
 (** * The module type [LITERAL] *)
 Module Type LITERAL.

@@ -1,6 +1,5 @@
 (** This file defines the module type of formulas in clause form. *)
 Require Export Sets.
-Require Export SetListInstance.
 Require Import Literal Semantics.
 
 (** * The module type [CNF] *)

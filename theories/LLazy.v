@@ -867,7 +867,7 @@ Module LLAZYFY (L : LITERALBASE) <: LITERAL.
   End ExpandNot.
 
   (** Sets of literals, clauses... *)
-  Require Import Sets SetListInstance.
+  Import Sets.
   Notation lset := (@set t t_OT (@SetAVLInstance.SetAVL_FSet t t_OT)).
   Notation clause := (@set t t_OT (@SetListInstance.SetList_FSet t t_OT)).
 
