@@ -3,6 +3,8 @@ Require Import Cnf Semantics.
 Set Implicit Arguments.
 Unset Strict Implicit.
 
+Global Set Automatic Coercions Import.
+  
 Inductive Exception (A : Type) := 
 | Normal (env : A)
 | Inconsistent.
