@@ -75,10 +75,10 @@ Module CNFLAZY <: CNFLAZY_INTERFACE.
     intros l t0 Hl Ht0. inversion Hl; subst; try contradiction.
     inversion Ht0; subst; simpl; auto.
     destruct H; subst; simpl; auto; contradiction.
-    intros l t0 Hl Ht0. inversion Hl; subst; try contradiction.
-    inversion Ht0; subst; simpl; try apply wf_mk_not; intuition.
+    intros l t0 Hl Ht0. inversion Hl; subst.
+    inversion Ht0; simpl in *; subst; simpl; try apply wf_mk_not; intuition.
     destruct H; subst; try contradiction.
-    inversion Ht0; subst; simpl; try apply wf_mk_not; intuition.
+    inversion Ht0; simpl in H; subst; simpl; try apply wf_mk_not; intuition.
   Qed.
   Definition mk_or (f g : t) : formula := 
     mk_literal (mk_or f g) (wf_mk_or f g).
@@ -96,7 +96,7 @@ Module CNFLAZY <: CNFLAZY_INTERFACE.
     inversion Ht0; subst; simpl; auto; contradiction.
     intros l t0 Hl Ht0. inversion Hl; subst; try contradiction.
     inversion Ht0; subst; simpl; try apply wf_mk_not; auto.
-    destruct H; subst; simpl; try apply wf_mk_not; intuition.
+    destruct H; simpl in *; subst; simpl; try apply wf_mk_not; intuition.
   Qed.
   Definition mk_and (f g : t) := 
     mk_literal (mk_and f g) (wf_mk_and f g).
