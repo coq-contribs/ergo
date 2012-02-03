@@ -473,8 +473,8 @@ Module RAWCCX (Import T : THEORY).
           end
       end.
     Proof.
-      exact guarded_wf_lt.
       intros; subst; revert teq2; apply merge_decreases.
+      exact guarded_wf_lt.
     Defined.
     Global Opaque clean_up.
 (*     Definition clean_up (e : t) : Exception t := *)
