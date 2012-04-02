@@ -1465,8 +1465,7 @@ Module RAWCCX (Import T : THEORY).
       constructor; intros wf M HM; destruct wf; simpl_mk_env.
       decide merge in e3; inversion e3; simpl in *; subst.
       inversion Fcorrect0; subst.
-      (* refine (Hmerge_inc _ M HM _). *) (* TODO: DIVERGE! *)
-      apply Hmerge_inc; try apply HM. (* TEMPORARY FIX... *)
+      apply Hmerge_inc; trivial.
       constructor; auto.
       assert (Hjc := justify_coincides Dcorrect0 Fcorrect0
         (submodel_eq_models_list HM)); inversion Hjc; subst.
