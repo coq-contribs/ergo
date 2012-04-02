@@ -1165,6 +1165,7 @@ Module FULL.
         SOT_cmp := fun p1 p2 => _this p1 =?= _this p2
     }.
     Proof.
+      instantiate (1 := _).  
       abstract (constructor; repeat intro; simpl in *;
         [order |
           apply (lt_not_eq H);
