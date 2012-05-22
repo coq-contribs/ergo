@@ -297,7 +297,7 @@ Module SAT (CNF : CNF)(Import E : ENV_INTERFACE CNF).
         intros x l0 IH; rewrite (fold_left_app); simpl.
         match goal with | |- select x ?F = _ -> _ => case_eq F end; intros.
         unfold select in IH0; inversion H0; discriminate.
-        destruct (InA_app _ H0); [exact (IH H C H1) |].
+        destruct (InA_app H0); [exact (IH H C H1) |].
         unfold select in IH0; case_eq (f x); intros.
         rewrite H2 in IH0; discriminate.
         inversion H1; [| inversion H4].

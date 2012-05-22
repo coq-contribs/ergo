@@ -1526,7 +1526,7 @@ Section ZEntailment.
   Qed.
 
   Remark equiv_M : Equivalence (models_eq M).
-  Proof. intuition. Qed.
+  Proof. dintuition. Qed.
   Hint Resolve equiv_M : core.
 
   Property term_of_R_P0 : M |= term_of_R (@P0 _ _) = [0].

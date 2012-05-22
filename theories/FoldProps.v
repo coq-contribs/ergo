@@ -163,7 +163,7 @@ Module SetFoldInd.
       assert (X:= (proj1 (sofl_1 L l)) (elements_1 H)).
       rewrite InA_alt in X |- *; destruct X; exists x0; intuition.
       rewrite elements_iff in Hl; rewrite (Hs' l) in Hl.
-      destruct (InA_app _ Hl); [right | left].
+      destruct (InA_app Hl); [right | left].
       apply elements_2; rewrite (sofl_1 L l); auto.
       inversion H; try inversion H1; intuition.
     Qed.
