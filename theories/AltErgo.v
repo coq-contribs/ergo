@@ -1,4 +1,4 @@
-Time Require Import
+Require Import
   CNFLazy CNFLazyN Env SatCaml 
   Dpll TacticLazy CCX EnvLazy.
 Require Export Ergo Quote.

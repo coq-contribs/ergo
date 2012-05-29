@@ -9,6 +9,9 @@ open Tacticals
 open Tactics
 open Pp
 open Flags
+open Locus
+open Locusops
+open Misctypes
 
 type dom =
   | DomNat | DomN | DomPos | DomZ
@@ -643,7 +646,7 @@ let quote_everything vm_name gl =
 	       mk_teq vtypes_name vsymbols_name cra crb |]) in
       tclTHEN (assert_by (Names.Name r) cut byapp)
 	(tclTHEN (Equality.general_rewrite_in
-		    true Termops.all_occurrences false true id (mkVar r) false)
+		    true AllOccurrences false true id (mkVar r) false)
 	   (clear [r]))
   in
   let rews (id, _, rs) = List.map (rewtactic id) rs in
@@ -707,7 +710,7 @@ let ergo_reify f_id reif_id vm_id gl =
     match kind_of_term (Typing.type_of env Evd.empty fty) with
       | Sort (Prop Null) ->
 	  let _, rf = reify env true [] fty in
- 	  let creif = constr_of_form rf in
+	  let creif = constr_of_form rf in
 	  let v = PEnv.to_varmap () in
 	  let vty = TyEnv.to_varmap () in
 	  let vsy = TEnv.to_varmap vty_id in

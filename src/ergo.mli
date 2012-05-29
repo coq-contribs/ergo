@@ -7,4 +7,4 @@ val ergo_reify : Names.identifier -> Names.identifier ->
   Names.identifier -> Proof_type.tactic
 
 val print_constr : Format.formatter -> Term.constr -> unit
-val print_ast : Topconstr.constr_expr -> unit
+val print_ast : Constrexpr.constr_expr -> unit
