@@ -892,7 +892,7 @@ Section WithVars.
     apply find_1 in Hz; rewrite Hz in IH.
     destruct (d0[k]) as [ ]_eqn.
     exists q1; split; [order | apply find_2; auto].
-    contradiction (Wf_p (v:=k) (q:=z)); simpl; apply find_2; auto.
+    contradiction (Wf_p (p:=(q,d)) (v:=k) (q:=z)); simpl; apply find_2; auto.
     apply find_1 in Hz; rewrite Hz in IH.
     destruct (d[k]) as [ ]_eqn.
     exists q1; split; [order | apply find_2; auto].
