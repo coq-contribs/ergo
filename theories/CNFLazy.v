@@ -42,6 +42,8 @@ Module CNFLAZY <: CNFLAZY_INTERFACE.
   
   Import LLAZY. Import CNFRAW.
 
+  Typeclasses Opaque RAW.eq. (* To speed-up rewrite *)
+
   (** We can now lift the smart constructors of [CNFRAW] to [LLAZY] 
      by proving that they build well-formed literals when their 
      parameters are well-formed. *)
