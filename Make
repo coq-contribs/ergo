@@ -7,17 +7,13 @@
 -R ../Nfix/theories Nfix
 -I ../Counting/src
 -R ../Counting/theories Counting
--custom "$(CAMLOPTLINK) $(ZDEBUG) $(ZFLAGS) -shared -o src/ergo_plugin.cmxs src/arith.cmx src/ergo.cmx src/ergo_plugin_mod.cmx" "src/arith.cmx src/ergo.cmx src/ergo_plugin_mod.cmx" src/ergo_plugin.cmxs
--custom "$(CAMLLINK) -g -a -o src/ergo_plugin.cma src/arith.cmo src/ergo.cmo src/ergo_plugin_mod.cmo" "src/arith.cmo src/ergo.cmo src/ergo_plugin_mod.cmo" src/ergo_plugin.cma
--custom "$(COQBIN)coqc $(COQDEBUG) $(COQFLAGS) $*" "%.v $(ERGO_PLUGINOPT) $(ERGO_PLUGIN)" "%.vo %.glob"
-ERGO_PLUGIN = "src/ergo_plugin.cma"
-ERGO_PLUGINOPT = "src/ergo_plugin.cmxs"
 COQDOC = "$(COQBIN)coqdoc -interpolate -utf8"
 CAMLP4OPTIONS = "-loc loc"
 src/arith.ml
 src/ergo.ml4
 src/ergo.mli
 src/ergo_plugin_mod.ml
+src/ergo_plugin.mllib
 theories/Adequation.v
 theories/AllInstances.v
 theories/AltErgo.v
