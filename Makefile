@@ -22,6 +22,8 @@
 # 
 # This Makefile may take arguments passed as environment variables:
 # COQBIN to specify the directory where Coq binaries resides;
+# TIMECMD set a command to log .v compilation time;
+# TIMED if non empty, use the default time command as TIMECMD;
 # ZDEBUG/COQDEBUG to specify debug flags for ocamlc&ocamlopt/coqc;
 # DSTROOT to specify a prefix to install path.
 
@@ -32,6 +34,11 @@ define donewline
 endef
 includecmdwithout@ = $(eval $(subst @,$(donewline),$(shell { $(1) | tr -d '\r' | tr '\n' '@'; })))
 $(call includecmdwithout@,$(COQBIN)coqtop -config)
+
+TIMED=
+TIMECMD=
+STDTIME?=/usr/bin/time -f "$* (user: %U mem: %M ko)"
+TIMER=$(if $(TIMED), $(STDTIME), $(TIMECMD))
 
 ##########################
 #                        #
@@ -67,50 +74,53 @@ CAMLP4OPTIONS=-loc loc
 COQDOC=$(COQBIN)coqdoc -interpolate -utf8
 
 OPT?=
-COQDEP?=$(COQBIN)coqdep -c
+COQDEP?="$(COQBIN)coqdep" -c
 COQFLAGS?=-q $(OPT) $(COQLIBS) $(OTHERFLAGS) $(COQ_XML)
 COQCHKFLAGS?=-silent -o
 COQDOCFLAGS?=-interpolate -utf8
-COQC?=$(COQBIN)coqc
-GALLINA?=$(COQBIN)gallina
-COQDOC?=$(COQBIN)coqdoc
-COQCHK?=$(COQBIN)coqchk
+COQC?=$(TIMER) "$(COQBIN)coqc"
+GALLINA?="$(COQBIN)gallina"
+COQDOC?="$(COQBIN)coqdoc"
+COQCHK?="$(COQBIN)coqchk"
+COQMKTOP?="$(COQBIN)coqmktop"
 
-COQSRCLIBS?=-I $(COQLIB)kernel -I $(COQLIB)lib \
-  -I $(COQLIB)library -I $(COQLIB)parsing -I $(COQLIB)pretyping \
-  -I $(COQLIB)interp -I $(COQLIB)printing -I $(COQLIB)intf \
-  -I $(COQLIB)proofs -I $(COQLIB)tactics -I $(COQLIB)tools \
-  -I $(COQLIB)toplevel -I $(COQLIB)grammar \
-  -I $(COQLIB)plugins/btauto \
-  -I $(COQLIB)plugins/cc \
-  -I $(COQLIB)plugins/decl_mode \
-  -I $(COQLIB)plugins/extraction \
-  -I $(COQLIB)plugins/firstorder \
-  -I $(COQLIB)plugins/fourier \
-  -I $(COQLIB)plugins/funind \
-  -I $(COQLIB)plugins/micromega \
-  -I $(COQLIB)plugins/nsatz \
-  -I $(COQLIB)plugins/omega \
-  -I $(COQLIB)plugins/quote \
-  -I $(COQLIB)plugins/romega \
-  -I $(COQLIB)plugins/rtauto \
-  -I $(COQLIB)plugins/setoid_ring \
-  -I $(COQLIB)plugins/syntax \
-  -I $(COQLIB)plugins/xml
+COQSRCLIBS?=-I "$(COQLIB)kernel" -I "$(COQLIB)lib" \
+  -I "$(COQLIB)library" -I "$(COQLIB)parsing" -I "$(COQLIB)pretyping" \
+  -I "$(COQLIB)interp" -I "$(COQLIB)printing" -I "$(COQLIB)intf" \
+  -I "$(COQLIB)proofs" -I "$(COQLIB)tactics" -I "$(COQLIB)tools" \
+  -I "$(COQLIB)toplevel" -I "$(COQLIB)grammar" \
+  -I $(COQLIB)/plugins/btauto \
+  -I $(COQLIB)/plugins/cc \
+  -I $(COQLIB)/plugins/decl_mode \
+  -I $(COQLIB)/plugins/extraction \
+  -I $(COQLIB)/plugins/field \
+  -I $(COQLIB)/plugins/firstorder \
+  -I $(COQLIB)/plugins/fourier \
+  -I $(COQLIB)/plugins/funind \
+  -I $(COQLIB)/plugins/micromega \
+  -I $(COQLIB)/plugins/nsatz \
+  -I $(COQLIB)/plugins/omega \
+  -I $(COQLIB)/plugins/quote \
+  -I $(COQLIB)/plugins/ring \
+  -I $(COQLIB)/plugins/romega \
+  -I $(COQLIB)/plugins/rtauto \
+  -I $(COQLIB)/plugins/setoid_ring \
+  -I $(COQLIB)/plugins/syntax \
+  -I $(COQLIB)/plugins/xml
 ZFLAGS=$(OCAMLLIBS) $(COQSRCLIBS) -I $(CAMLP4LIB)
 
-CAMLC?=$(OCAMLC) -c
-CAMLOPTC?=$(OCAMLOPT) -c
-CAMLLINK?=$(OCAMLC)
-CAMLOPTLINK?=$(OCAMLOPT)
+CAMLC?=$(OCAMLC) -c -rectypes
+CAMLOPTC?=$(OCAMLOPT) -c -rectypes
+CAMLLINK?=$(OCAMLC) -rectypes
+CAMLOPTLINK?=$(OCAMLOPT) -rectypes
 GRAMMARS?=grammar.cma
 ifeq ($(CAMLP4),camlp5)
 CAMLP4EXTEND=pa_extend.cmo q_MLast.cmo pa_macro.cmo
 else
 CAMLP4EXTEND=
 endif
-PP?=-pp "$(CAMLP4O) -I $(CAMLLIB) -I . $(COQSRCLIBS) compat5.cmo \
-  $(CAMLP4EXTEND) $(GRAMMARS) $(CAMLP4OPTIONS) -impl"
+PP?=-pp '"$(CAMLP4O)" -I "$(CAMLLIB)" -I . $(COQSRCLIBS) compat5.cmo \
+  $(CAMLP4EXTEND) $(GRAMMARS) $(CAMLP4OPTIONS) -impl'
 
 ##################
 #                #
@@ -119,12 +129,12 @@ PP?=-pp "$(CAMLP4O) -I $(CAMLLIB) -I . $(COQSRCLIBS) compat5.cmo \
 ##################
 
 ifdef USERINSTALL
-XDG_DATA_HOME?=$(HOME)/.local/share
+XDG_DATA_HOME?="$(HOME)/.local/share"
 COQLIBINSTALL=$(XDG_DATA_HOME)/coq
 COQDOCINSTALL=$(XDG_DATA_HOME)/doc/coq
 else
-COQLIBINSTALL=${COQLIB}user-contrib
-COQDOCINSTALL=${DOCDIR}user-contrib
+COQLIBINSTALL="${COQLIB}user-contrib"
+COQDOCINSTALL="${DOCDIR}user-contrib"
 endif
 
 ######################
@@ -237,10 +247,10 @@ all: $(VOFILES) $(CMOFILES) $(CMAFILES) $(if $(HASNATDYNLINK_OR_EMPTY),$(CMXSFIL
 
 mlihtml: $(MLIFILES:.mli=.cmi)
 	 mkdir $@ || rm -rf $@/*
-	$(OCAMLDOC) -html -d $@ -m A $(ZDEBUG) $(ZFLAGS) $(^:.cmi=.mli)
+	$(OCAMLDOC) -html -rectypes -d $@ -m A $(ZDEBUG) $(ZFLAGS) $(^:.cmi=.mli)
 
 all-mli.tex: $(MLIFILES:.mli=.cmi)
-	$(OCAMLDOC) -latex -o $@ -m A $(ZDEBUG) $(ZFLAGS) $(^:.cmi=.mli)
+	$(OCAMLDOC) -latex -rectypes -o $@ -m A $(ZDEBUG) $(ZFLAGS) $(^:.cmi=.mli)
 
 spec: $(VIFILES)
 
@@ -292,70 +302,70 @@ userinstall:
 	+$(MAKE) USERINSTALL=true install
 
 install-natdynlink:
-	install -d $(DSTROOT)$(COQLIBINSTALL)/Ergo; \
+	install -d "$(DSTROOT)"$(COQLIBINSTALL)/Ergo; \
 	for i in $(CMXSFILESINC); do \
-	 install -m 0644 $$i $(DSTROOT)$(COQLIBINSTALL)/Ergo/`basename $$i`; \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Ergo/`basename $$i`; \
 	done
-	install -d $(DSTROOT)$(COQLIBINSTALL)/Containers; \
+	install -d "$(DSTROOT)"$(COQLIBINSTALL)/Containers; \
 	for i in $(CMXSFILESINC); do \
-	 install -m 0644 $$i $(DSTROOT)$(COQLIBINSTALL)/Containers/`basename $$i`; \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Containers/`basename $$i`; \
 	done
-	install -d $(DSTROOT)$(COQLIBINSTALL)/Nfix; \
+	install -d "$(DSTROOT)"$(COQLIBINSTALL)/Nfix; \
 	for i in $(CMXSFILESINC); do \
-	 install -m 0644 $$i $(DSTROOT)$(COQLIBINSTALL)/Nfix/`basename $$i`; \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Nfix/`basename $$i`; \
 	done
-	install -d $(DSTROOT)$(COQLIBINSTALL)/Counting; \
+	install -d "$(DSTROOT)"$(COQLIBINSTALL)/Counting; \
 	for i in $(CMXSFILESINC); do \
-	 install -m 0644 $$i $(DSTROOT)$(COQLIBINSTALL)/Counting/`basename $$i`; \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Counting/`basename $$i`; \
 	done
 
 install:$(if $(HASNATDYNLINK_OR_EMPTY),install-natdynlink)
-	cd theories && for i in $(VOFILES4); do \
-	 install -d `dirname $(DSTROOT)$(COQLIBINSTALL)/Ergo/$$i`; \
-	 install -m 0644 $$i $(DSTROOT)$(COQLIBINSTALL)/Ergo/$$i; \
+	cd "theories" && for i in $(VOFILES4); do \
+	 install -d "`dirname "$(DSTROOT)"$(COQLIBINSTALL)/Ergo/$$i`"; \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Ergo/$$i; \
 	done
 	for i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do \
-	 install -m 0644 $$i $(DSTROOT)$(COQLIBINSTALL)/Ergo/`basename $$i`; \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Ergo/`basename $$i`; \
 	done
-	install -d $(DSTROOT)$(COQLIBINSTALL)/Containers; \
+	install -d "$(DSTROOT)"$(COQLIBINSTALL)/Containers; \
 	for i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do \
-	 install -m 0644 $$i $(DSTROOT)$(COQLIBINSTALL)/Containers/`basename $$i`; \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Containers/`basename $$i`; \
 	done
-	install -d $(DSTROOT)$(COQLIBINSTALL)/Nfix; \
+	install -d "$(DSTROOT)"$(COQLIBINSTALL)/Nfix; \
 	for i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do \
-	 install -m 0644 $$i $(DSTROOT)$(COQLIBINSTALL)/Nfix/`basename $$i`; \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Nfix/`basename $$i`; \
 	done
-	install -d $(DSTROOT)$(COQLIBINSTALL)/Counting; \
+	install -d "$(DSTROOT)"$(COQLIBINSTALL)/Counting; \
 	for i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do \
-	 install -m 0644 $$i $(DSTROOT)$(COQLIBINSTALL)/Counting/`basename $$i`; \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Counting/`basename $$i`; \
 	done
 
 install-doc:
-	install -d $(DSTROOT)$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT)/html
+	install -d "$(DSTROOT)"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT)/html
 	for i in html/*; do \
-	 install -m 0644 $$i $(DSTROOT)$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT)/$$i;\
+	 install -m 0644 $$i "$(DSTROOT)"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT)/$$i;\
 	done
-	install -d $(DSTROOT)$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT)/mlihtml
+	install -d "$(DSTROOT)"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT)/mlihtml
 	for i in mlihtml/*; do \
-	 install -m 0644 $$i $(DSTROOT)$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT)/$$i;\
+	 install -m 0644 $$i "$(DSTROOT)"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT)/$$i;\
 	done
 
 uninstall_me.sh:
 	echo '#!/bin/sh' > $@ 
-	printf 'cd $${DSTROOT}$(COQLIBINSTALL)/Ergo && \\\nfor i in $(CMXSFILESINC); do rm -f `basename $$i`; done && find . -type d -and -empty -delete\ncd $${DSTROOT}$(COQLIBINSTALL) && find Ergo -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd $${DSTROOT}$(COQLIBINSTALL)/Containers && \\\nfor i in $(CMXSFILESINC); do rm -f `basename $$i`; done && find . -type d -and -empty -delete\ncd $${DSTROOT}$(COQLIBINSTALL) && find Containers -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd $${DSTROOT}$(COQLIBINSTALL)/Nfix && \\\nfor i in $(CMXSFILESINC); do rm -f `basename $$i`; done && find . -type d -and -empty -delete\ncd $${DSTROOT}$(COQLIBINSTALL) && find Nfix -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd $${DSTROOT}$(COQLIBINSTALL)/Counting && \\\nfor i in $(CMXSFILESINC); do rm -f `basename $$i`; done && find . -type d -and -empty -delete\ncd $${DSTROOT}$(COQLIBINSTALL) && find Counting -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd $${DSTROOT}$(COQLIBINSTALL)/Ergo && rm -f $(VOFILES4) && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do rm -f `basename $$i`; done && find . -type d -and -empty -delete\ncd $${DSTROOT}$(COQLIBINSTALL) && find Ergo -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd $${DSTROOT}$(COQLIBINSTALL)/Containers && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do rm -f `basename $$i`; done && find . -type d -and -empty -delete\ncd $${DSTROOT}$(COQLIBINSTALL) && find Containers -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd $${DSTROOT}$(COQLIBINSTALL)/Nfix && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do rm -f `basename $$i`; done && find . -type d -and -empty -delete\ncd $${DSTROOT}$(COQLIBINSTALL) && find Nfix -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd $${DSTROOT}$(COQLIBINSTALL)/Counting && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do rm -f `basename $$i`; done && find . -type d -and -empty -delete\ncd $${DSTROOT}$(COQLIBINSTALL) && find Counting -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd $${DSTROOT}$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT) \\\n' >> "$@"
-	printf '&& rm -f $(shell find html -maxdepth 1 -and -type f -print)\n' >> "$@"
-	printf 'cd $${DSTROOT}$(COQDOCINSTALL) && find $(INSTALLDEFAULTROOT)/html -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd $${DSTROOT}$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT) \\\n' >> "$@"
-	printf '&& rm -f $(shell find mlihtml -maxdepth 1 -and -type f -print)\n' >> "$@"
-	printf 'cd $${DSTROOT}$(COQDOCINSTALL) && find $(INSTALLDEFAULTROOT)/mlihtml -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Ergo && \\\nfor i in $(CMXSFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Ergo" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Containers && \\\nfor i in $(CMXSFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Containers" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Nfix && \\\nfor i in $(CMXSFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Nfix" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Counting && \\\nfor i in $(CMXSFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Counting" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Ergo && rm -f $(VOFILES4) && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Ergo" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Containers && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Containers" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Nfix && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Nfix" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Counting && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Counting" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT) \\\n' >> "$@"
+	printf '&& rm -f $(shell find "html" -maxdepth 1 -and -type f -print)\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL) && find $(INSTALLDEFAULTROOT)/html -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT) \\\n' >> "$@"
+	printf '&& rm -f $(shell find "mlihtml" -maxdepth 1 -and -type f -print)\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL) && find $(INSTALLDEFAULTROOT)/mlihtml -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
 	chmod +x $@
 
 uninstall: uninstall_me.sh
@@ -373,17 +383,17 @@ archclean:
 	rm -f *.cmx *.o
 
 printenv:
-	@$(COQBIN)coqtop -config
-	@echo CAMLC =	$(CAMLC)
-	@echo CAMLOPTC =	$(CAMLOPTC)
-	@echo PP =	$(PP)
-	@echo COQFLAGS =	$(COQFLAGS)
-	@echo COQLIBINSTALL =	$(COQLIBINSTALL)
-	@echo COQDOCINSTALL =	$(COQDOCINSTALL)
+	@"$(COQBIN)coqtop" -config
+	@echo 'CAMLC =	$(CAMLC)'
+	@echo 'CAMLOPTC =	$(CAMLOPTC)'
+	@echo 'PP =	$(PP)'
+	@echo 'COQFLAGS =	$(COQFLAGS)'
+	@echo 'COQLIBINSTALL =	$(COQLIBINSTALL)'
+	@echo 'COQDOCINSTALL =	$(COQDOCINSTALL)'
 
 Makefile: Make
 	mv -f $@ $@.bak
-	$(COQBIN)coq_makefile -f $< -o $@
+	"$(COQBIN)coq_makefile" -f $< -o $@
 
 
 ###################
@@ -405,7 +415,7 @@ Makefile: Make
 	$(CAMLOPTC) $(ZDEBUG) $(ZFLAGS) $(PP) -impl $<
 
 %.ml4.d: %.ml4
-	$(OCAMLDEP) -slash $(OCAMLLIBS) $(PP) -impl "$<" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
+	$(COQDEP) -slash $(OCAMLLIBS) "$<" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
 
 %.cmo: %.ml
 	$(CAMLC) $(ZDEBUG) $(ZFLAGS) $<
@@ -450,7 +460,7 @@ Makefile: Make
 	$(COQDOC) $(COQDOCFLAGS) -latex -g $< -o $@
 
 %.g.html: %.v %.glob
-	$(COQDOC)$(COQDOCFLAGS)  -html -g $< -o $@
+	$(COQDOC) $(COQDOCFLAGS)  -html -g $< -o $@
 
 %.v.d: %.v
 	$(COQDEP) -slash $(COQLIBS) "$<" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
