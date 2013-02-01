@@ -15,7 +15,7 @@ ERGO_PLUGINOPT = "src/ergo_plugin.cmxs"
 COQDOC = "$(COQBIN)coqdoc -interpolate -utf8"
 CAMLP4OPTIONS = "-loc loc"
 src/arith.ml
-src/ergo.ml
+src/ergo.ml4
 src/ergo.mli
 src/ergo_plugin_mod.ml
 theories/Adequation.v
