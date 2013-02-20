@@ -261,7 +261,7 @@ let varmap_of_vars ty c iter =
 module type EnvSig = sig
   val size : int
   val ty : unit -> constr
-  val d : option (unit -> constr)
+  val d : (unit -> constr) option
 end
 module Env (X : EnvSig) = struct
   let counter = ref 1
