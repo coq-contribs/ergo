@@ -629,28 +629,18 @@ Module LLAZYFY (L : LITERALBASE) <: LITERAL.
     set (Hy_weak := fun l' t0 =>
       wf_expand (Proxy pos0 neg0) l' t0
       (wf_lit_2_weak (Proxy pos0 neg0) Hy)).
-    fold Hy_weak; clearbody Hy_weak; clear Hy Hx.
+    fold Hy_weak; clearbody Hy_weak; clear Hy Hx. unfold RAW.t.
     simpl in *;  clear neg0; induction pos0; simpl; constructor.
     clear IHpos0.
-    set (Ha_weak := (fun t0 : RAW.t =>
+    set (Ha_weak := (fun t0 : RAW.t_ =>
          Hx_weak a t0
            (or_introl
-              ((fix In (a0 : list RAW.t) (l : list (list RAW.t))
-                       {struct l} : Prop :=
-                  match l with
-                  | nil => False
-                  | b :: m => b = a0 \/ In a0 m
-                  end) a pos0) (refl_equal a)))).
+              (In a pos0) (refl_equal a)))).
     fold Ha_weak; clearbody Ha_weak; clear Hx_weak.
-    set (Ha'_weak := (fun t0 : RAW.t =>
+    set (Ha'_weak := (fun t0 : RAW.t_ =>
          Hy_weak a t0
            (or_introl
-              ((fix In (a0 : list RAW.t) (l : list (list RAW.t))
-                       {struct l} : Prop :=
-                  match l with
-                  | nil => False
-                  | b :: m => b = a0 \/ In a0 m
-                  end) a pos0) (refl_equal a)))).
+              (In a pos0) (refl_equal a)))).
     fold Ha'_weak; clearbody Ha'_weak; clear Hy_weak pos0.
     induction a; simpl; constructor.
     simpl; reflexivity. apply IHa.
@@ -666,18 +656,13 @@ Module LLAZYFY (L : LITERALBASE) <: LITERAL.
     inversion Hx; simpl; clear H1 H2; subst.
     set (Hx_weak := fun l' t =>
       wf_expand (Proxy pos neg) l' t (wf_lit_2_weak (Proxy pos neg) Hx)).
-    fold Hx_weak; clearbody Hx_weak; simpl in Hx_weak.
+    fold Hx_weak; clearbody Hx_weak; simpl in Hx_weak. unfold RAW.t.
     clear; induction pos; simpl; constructor.
     clear IHpos.
-    set (Ha_weak := (fun t0 : RAW.t =>
+    set (Ha_weak := (fun t0 : RAW.t_ =>
          Hx_weak a t0
            (or_introl
-              ((fix In (a0 : list RAW.t) (l : list (list RAW.t))
-                       {struct l} : Prop :=
-                  match l with
-                  | nil => False
-                  | b :: m => b = a0 \/ In a0 m
-                  end) a pos) (refl_equal a)))).
+              (In a pos) (refl_equal a)))).
     fold Ha_weak; clearbody Ha_weak; clear Hx_weak.
     induction a; simpl; constructor. reflexivity.
     apply IHa.
