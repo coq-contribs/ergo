@@ -845,7 +845,7 @@ TACTIC EXTEND valid_prepare
     [ valid_prepare ]
 END
 
-VERNAC COMMAND EXTEND PrintTerm
+VERNAC COMMAND EXTEND PrintTerm CLASSIFIED AS QUERY
  ["PrintAst" constr(constr_expr)] ->
     [ print_ast constr_expr ]
 END
