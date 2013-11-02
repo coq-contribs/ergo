@@ -500,6 +500,10 @@ let rec reify env with_terms acc frm =
 		(t, ty, a, b, ra, rb)::acc, FEq (ra, rb)
 	    | _ ->  acc, FVar (PEnv.add frm)
 
+(* spiwack: letin_tac is in new style, but this file generally assumes it to be
+   in old style, hence the wrapper. *)
+let letin_tac o1 n c o2 t = Proofview.V82.of_tactic (letin_tac o1 n c o2 t)
+
 (* print_props and quote_props *)
 let print_props vm_name gl =
   Coqlib.check_required_library ["Coq";"quote";"Quote"];
@@ -639,14 +643,14 @@ let quote_everything vm_name gl =
       mk_replace vtypes_name vsymbols_name (constr_of_ty ty)
 	a b cra crb in
     let byapp =
-      tclTHEN (apply rw) (tclTHEN simpl_in_concl reflexivity) in
+      tclTHEN (apply rw) (tclTHEN simpl_in_concl (Proofview.V82.of_tactic reflexivity)) in
     let cut =
       mkApp (coq_iff (), [|
 	       mkApp (build_coq_eq (), [|t; a; b|]);
 	       mk_teq vtypes_name vsymbols_name cra crb |]) in
-      tclTHEN (assert_by (Names.Name r) cut byapp)
-	(tclTHEN (Equality.general_rewrite_in
-		    true AllOccurrences false true id (mkVar r) false)
+      tclTHEN (Proofview.V82.of_tactic (assert_by (Names.Name r) cut (Proofview.V82.tactic byapp)))
+	(tclTHEN (Proofview.V82.of_tactic (Equality.general_rewrite_in
+		    true AllOccurrences false true id (mkVar r) false))
 	   (clear [r]))
   in
   let rews (id, _, rs) = List.map (rewtactic id) rs in
@@ -691,7 +695,7 @@ let build_conjunction finalid gl =
 			    ))
 	    (mkVar ida, hypa, [ida]) q
   in
-    (tclTHEN (pose_proof (Names.Name finalid) conj) (clear lids)) gl
+    (tclTHEN (Proofview.V82.of_tactic (pose_proof (Names.Name finalid) conj)) (clear lids)) gl
 
 let ergo_reify f_id reif_id vm_id gl =
   Coqlib.check_required_library ["Coq";"quote";"Quote"];
@@ -820,29 +824,29 @@ let print_ast constr_expr =
 (* Toplevel Extensions *)
 
 TACTIC EXTEND print_props
-  [ "print_props" ident(id) ] -> [ print_props id ]
+  [ "print_props" ident(id) ] -> [ Proofview.V82.tactic (print_props id) ]
 END
 
 TACTIC EXTEND quote_props
-  [ "quote_props" ident(id) ] -> [ quote_props id ]
+  [ "quote_props" ident(id) ] -> [ Proofview.V82.tactic (quote_props id) ]
 END
 
 TACTIC EXTEND quote_everything
-  [ "quote_everything" ident(id) ] -> [ quote_everything id ]
+  [ "quote_everything" ident(id) ] -> [ Proofview.V82.tactic (quote_everything id) ]
 END
 
 TACTIC EXTEND build_conjunction
-  [ "build_conjunction" ident(id) ] -> [ build_conjunction id ]
+  [ "build_conjunction" ident(id) ] -> [ Proofview.V82.tactic (build_conjunction id) ]
 END
 
 TACTIC EXTEND ergo_reify
   [ "ergo_reify" ident(f) ident(reif) ident(v) ] ->
-    [ ergo_reify f reif v ]
+    [ Proofview.V82.tactic (ergo_reify f reif v) ]
 END
 
 TACTIC EXTEND valid_prepare
   [ "valid_prepare" ] ->
-    [ valid_prepare ]
+    [ Proofview.V82.tactic (valid_prepare) ]
 END
 
 VERNAC COMMAND EXTEND PrintTerm CLASSIFIED AS QUERY
