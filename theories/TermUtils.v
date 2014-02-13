@@ -24,11 +24,14 @@ Section Symbol_as_UOT.
       SOT_cmp := arith_domain_cmp
     }.
     Proof.
-      constructor.
-      exact arith_domain_lt_trans.
-      intros; intro E; change (x = y) in E; rewrite <- arith_domain_eq_iff in E.
-      exact (arith_domain_lt_irrefl _ _ H E).
-      intros; destruct (arith_domain_compare_spec x y); constructor; auto.
+    + eauto.
+
+    + constructor.
+      - exact arith_domain_lt_trans.
+      - intros; intro E; change (x = y) in E; rewrite <- arith_domain_eq_iff in E.
+        exact (arith_domain_lt_irrefl _ _ H E).
+
+    + intros; destruct (arith_domain_compare_spec x y); constructor; auto.
       exact (proj1 (arith_domain_eq_iff _ _) H).
     Defined.
   End ArithDomain_as_UOT.
@@ -48,11 +51,12 @@ Section Symbol_as_UOT.
       SOT_cmp := arithop_cmp
     }.
     Proof.
-      constructor.
-      exact arithop_lt_trans.
-      intros; intro E; change (x = y) in E; rewrite <- arithop_eq_iff in E.
-      exact (arithop_lt_irrefl _ _ H E).
-      intros; destruct (arithop_compare_spec x y); constructor; auto.
+    + eauto.
+    + constructor.
+      - exact arithop_lt_trans.
+      - intros; intro E; change (x = y) in E; rewrite <- arithop_eq_iff in E.
+        exact (arithop_lt_irrefl _ _ H E).
+    + intros; destruct (arithop_compare_spec x y); constructor; auto.
       exact (proj1 (arithop_eq_iff _ _) H).
     Defined.
   End Arithop_as_UOT.

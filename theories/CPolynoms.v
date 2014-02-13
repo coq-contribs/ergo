@@ -828,7 +828,7 @@ Section WithVars.
     { Wf_p := fun v q Hv Hq => _ }.
   Proof.
     unfold cancel in Hv; simpl in *.
-    refine (@Wf_p _ H v0 q _ Hq); apply remove_3 with v; auto.
+    refine (@Wf_p _ H v q _ Hq); apply remove_3 with v0; auto.
   Qed.
   
   Property Wf_addk_m : 
@@ -1165,7 +1165,7 @@ Module FULL.
         SOT_cmp := fun p1 p2 => _this p1 =?= _this p2
     }.
     Proof.
-      instantiate (1 := _).  
+      now auto with typeclass_instances.
       abstract (constructor; repeat intro; simpl in *;
         [order |
           apply (lt_not_eq H);

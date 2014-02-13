@@ -1335,7 +1335,7 @@ Module RAWCCX (Import T : THEORY).
       intro abs; simpl fst in *.
       contradiction (Ncoincides_submodel Ncorrect0 Hsub Hx1).
 (*       refine (Ncoincides_submodel Ncorrect0 Hsub Hx1 _). *)
-      apply models_eq_sym; refine (coincides_submodel _ _ Hx2).
+      apply models_eq_sym; refine (coincides_submodel _ _ Hx2); shelve_unifiable.
       apply (c'merge' Dwf0 (refl_equal _) Dcorrect0).
       constructor; auto.
       (* -- General case *)
