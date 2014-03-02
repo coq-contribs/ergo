@@ -151,7 +151,7 @@ Module LoadTactic (Import F : CNFLAZY_INTERFACE) (Import LS : DPLL F).
         Term.types_of Term.tequal Term.typeBinop Term.typeUnop
         projT1 projT2 varmap_find Term.mk_depvmap Term.interp_op
         Term.dom_equal Term.mk_symbol Term.symbol_equal Term.arithop_equal
-        Zeq_bool Zcompare Pcompare eq_ind eq_ind_r eq_rect Term.tequal_1 
+        Zeq_bool Zcompare Pos.compare_cont eq_ind eq_ind_r eq_rect Term.tequal_1 
         index_eq index_ind index_rect sym_eq
       ] 
       in ieq in
