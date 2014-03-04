@@ -267,24 +267,25 @@ module type EnvSig = sig
   val d : (unit -> constr) option
 end
 module Env (X : EnvSig) = struct
+  module ConstrTable = Hashtbl.Make(Constr)
   let counter = ref 1
-  let vars = Hashtbl.create X.size
+  let vars = ConstrTable.create X.size
 
   let reset () =
-    Hashtbl.clear vars;
+    ConstrTable.clear vars;
     match X.d with
-      | Some d -> Hashtbl.add vars (d ()) 0; counter := 1
+      | Some d -> ConstrTable.add vars (d ()) 0; counter := 1
       | None -> counter := 0
 
   let add frm =
-    try Hashtbl.find vars frm
+    try ConstrTable.find vars frm
     with Not_found ->
-      (let n = !counter in Hashtbl.add vars frm n; incr counter; n)
+      (let n = !counter in ConstrTable.add vars frm n; incr counter; n)
 
   let count () = !counter
 
-  let iter f = Hashtbl.iter f vars
-  let fold f acc = Hashtbl.fold f vars acc
+  let iter f = ConstrTable.iter f vars
+  let fold f acc = ConstrTable.fold f vars acc
 
   let to_varmap () =
     varmap_of_vars (X.ty ()) !counter iter
@@ -494,7 +495,7 @@ let rec reify env with_terms acc frm =
 		let acc1, rf1 = reify acc f1 in
 		let acc2, rf2 = reify acc1 f2 in
 		acc2, Iff (rf1, rf2)
-	    | [t;a;b] when with_terms && hs = build_coq_eq () ->
+	    | [t;a;b] when with_terms && eq_constr hs (build_coq_eq ()) ->
 		let ty, ra = reify_term env a in
 		let _, rb = reify_term env b in
 		(t, ty, a, b, ra, rb)::acc, FEq (ra, rb)
@@ -762,11 +763,11 @@ let print_kn fmt kn =
 let rec print_constr fmt c =
   let f = print_constr in
   match kind_of_term c with
-  | _ when c = build_coq_False () -> fprintf fmt "False"
-  | _ when c = build_coq_True () -> fprintf fmt "True"
-  | _ when c = build_coq_not () -> fprintf fmt "Not"
-  | _ when c = build_coq_or () -> fprintf fmt "Or"
-  | _ when c = build_coq_and () -> fprintf fmt "And"
+  | _ when eq_constr c (build_coq_False ()) -> fprintf fmt "False"
+  | _ when eq_constr c (build_coq_True ()) -> fprintf fmt "True"
+  | _ when eq_constr c (build_coq_not ()) -> fprintf fmt "Not"
+  | _ when eq_constr c (build_coq_or ()) -> fprintf fmt "Or"
+  | _ when eq_constr c (build_coq_and ()) -> fprintf fmt "And"
   | Rel i -> fprintf fmt "rel %d" i
   | Var id -> fprintf fmt ("var %s") (Names.string_of_id id)
   | Meta _ -> fprintf fmt "meta"
