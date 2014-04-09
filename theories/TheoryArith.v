@@ -120,14 +120,13 @@ Section Test.
 End Test.
 
 (** Morphisms *)
-Opaque R_OT.
 Local Instance leaves_m : Proper (_eq ==> _eq) leaves.
 Proof.
   repeat intro; unfold leaves.
   assert (Heq := leaves_equiv H).
   inversion Heq; constructor; auto; constructor.
 Qed.
-  
+
 Local Instance subst_m : Proper (_eq ==> _eq ==> _eq ==> _eq) subst.
 Proof.
   intros p p' Hp P P' HP r r' Hr; unfold subst.
@@ -153,6 +152,7 @@ Proof.
   rewrite Hsub, H3, H2; reflexivity.
 Qed.
 
+Opaque R_OT.
 (** Properties and specs *)
 Theorem leaves_not_empty : forall r, leaves r <> nil.
 Proof.

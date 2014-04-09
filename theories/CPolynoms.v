@@ -1156,6 +1156,8 @@ Module FULL.
       repeat intro; rewrite H, H0; reflexivity. 
     Qed.
 
+    Local Transparent dict MapsTo.
+
     (** Polynoms as an OrderedType *)
     Definition reminder := RAW.poly_OT.
     Existing Instance reminder.
@@ -1176,11 +1178,14 @@ Module FULL.
           destruct x; destruct y; simpl in *;
             rewrite <- RAW.wf_equiv_iff in H; auto).
     Defined.
+
+    Local Opaque dict MapsTo.
+
     Global Instance poly_OT : OrderedType poly.
     Proof. 
       apply SOT_as_OT. 
     Defined.
-    
+
     (** Properties and specs, in terms of [coef_of] *)
     CoInductive embed_spec (t : vars) : poly -> Prop :=
     | embed_spec_intro : 
