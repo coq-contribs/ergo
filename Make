@@ -1,5 +1,5 @@
 -I src
--I tests
+-R tests Tests
 -R theories Ergo
 -I ../Containers/src
 -R ../Containers/theories Containers

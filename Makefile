@@ -49,20 +49,20 @@ TIMER=$(if $(TIMED), $(STDTIME), $(TIMECMD))
 OCAMLLIBS?=-I ../Counting/src\
   -I ../Nfix/src\
   -I ../Containers/src\
-  -I tests\
   -I src
 COQLIBS?=-I ../Counting/src\
   -I ../Nfix/src\
   -I ../Containers/src\
-  -I tests\
   -I src -R ../Counting/theories Counting\
   -R ../Nfix/theories Nfix\
   -R ../Containers/theories Containers\
-  -R theories Ergo
+  -R theories Ergo\
+  -R tests Tests
 COQDOCLIBS?=-R ../Counting/theories Counting\
   -R ../Nfix/theories Nfix\
   -R ../Containers/theories Containers\
-  -R theories Ergo
+  -R theories Ergo\
+  -R tests Tests
 
 ##########################
 #                        #
@@ -191,8 +191,8 @@ VFILES:=tests/TestErgo.v\
 
 VO=vo
 VOFILES:=$(VFILES:.v=.$(VO))
-VOFILESINC=$(filter $(wildcard tests/*),$(VOFILES)) 
 VOFILES4=$(patsubst theories/%,%,$(filter theories/%,$(VOFILES)))
+VOFILES5=$(patsubst tests/%,%,$(filter tests/%,$(VOFILES)))
 GLOBFILES:=$(VFILES:.v=.glob)
 GFILES:=$(VFILES:.v=.g)
 HTMLFILES:=$(VFILES:.v=.html)
@@ -305,6 +305,10 @@ userinstall:
 	+$(MAKE) USERINSTALL=true install
 
 install-natdynlink:
+	install -d "$(DSTROOT)"$(COQLIBINSTALL)/Tests; \
+	for i in $(CMXSFILESINC); do \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Tests/`basename $$i`; \
+	done
 	install -d "$(DSTROOT)"$(COQLIBINSTALL)/Ergo; \
 	for i in $(CMXSFILESINC); do \
 	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Ergo/`basename $$i`; \
@@ -323,23 +327,30 @@ install-natdynlink:
 	done
 
 install:$(if $(HASNATDYNLINK_OR_EMPTY),install-natdynlink)
+	cd "tests" && for i in $(VOFILES5); do \
+	 install -d "`dirname "$(DSTROOT)"$(COQLIBINSTALL)/Tests/$$i`"; \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Tests/$$i; \
+	done
+	for i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC); do \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Tests/`basename $$i`; \
+	done
 	cd "theories" && for i in $(VOFILES4); do \
 	 install -d "`dirname "$(DSTROOT)"$(COQLIBINSTALL)/Ergo/$$i`"; \
 	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Ergo/$$i; \
 	done
-	for i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do \
+	for i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC); do \
 	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Ergo/`basename $$i`; \
 	done
 	install -d "$(DSTROOT)"$(COQLIBINSTALL)/Containers; \
-	for i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do \
+	for i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC); do \
 	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Containers/`basename $$i`; \
 	done
 	install -d "$(DSTROOT)"$(COQLIBINSTALL)/Nfix; \
-	for i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do \
+	for i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC); do \
 	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Nfix/`basename $$i`; \
 	done
 	install -d "$(DSTROOT)"$(COQLIBINSTALL)/Counting; \
-	for i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do \
+	for i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC); do \
 	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/Counting/`basename $$i`; \
 	done
 
@@ -355,14 +366,16 @@ install-doc:
 
 uninstall_me.sh:
 	echo '#!/bin/sh' > $@ 
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Tests && \\\nfor i in $(CMXSFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Tests" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
 	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Ergo && \\\nfor i in $(CMXSFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Ergo" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
 	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Containers && \\\nfor i in $(CMXSFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Containers" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
 	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Nfix && \\\nfor i in $(CMXSFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Nfix" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
 	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Counting && \\\nfor i in $(CMXSFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Counting" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Ergo && rm -f $(VOFILES4) && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Ergo" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Containers && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Containers" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Nfix && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Nfix" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Counting && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC) $(VOFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Counting" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Tests && rm -f $(VOFILES5) && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Tests" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Ergo && rm -f $(VOFILES4) && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Ergo" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Containers && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Containers" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Nfix && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Nfix" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/Counting && \\\nfor i in $(CMAFILESINC) $(CMIFILESINC) $(CMOFILESINC); do rm -f "`basename "$$i"`"; done && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "Counting" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
 	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT) \\\n' >> "$@"
 	printf '&& rm -f $(shell find "html" -maxdepth 1 -and -type f -print)\n' >> "$@"
 	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL) && find $(INSTALLDEFAULTROOT)/html -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
