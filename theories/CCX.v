@@ -1905,16 +1905,19 @@ Module TestsDeCCXE.
   Local Notation gb := (app g (tb::nil)).
   Local Notation gc := (app g (tc::nil)).
 
+  Local Transparent Uf.t.
+
   (* printing the state *)
   Definition strip (c : t) :=
     let 'mk_env G D N F I := c in
     let Gs := 
       MapInterface.fold (fun k v acc => (k, elements v)::acc) G nil in
-    let Ds := 
+    let Ds :=
       MapInterface.elements (Uf.this D) in
     let Ns := 
       MapInterface.fold (fun k v acc => (k, elements v)::acc) N nil in
         (Gs, Ds, Ns, F, I).
+
   Ltac print e :=
     let z := eval vm_compute in (strip e) in
     match constr:z with
@@ -2025,6 +2028,7 @@ Module TestsDeCCXA.
   (* printing the state *)
   Definition stripR (r : R) := 
     let r := CPolynoms.FULL._this r in (fst r, MapInterface.elements (snd r)).
+  Local Transparent Uf.t.
   Definition strip (c : t) :=
     let 'mk_env G D N F I := c in
     let Gs := 
@@ -2035,6 +2039,7 @@ Module TestsDeCCXA.
     let Ns := 
       MapInterface.fold (fun k v acc => (k, elements v)::acc) N nil in
         (Gs, Ds, Ns, F, I).
+
   Ltac print e :=
     let z := eval vm_compute in (strip e) in
     match constr:z with
