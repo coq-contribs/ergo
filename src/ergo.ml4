@@ -244,6 +244,10 @@ let mk_right idx =
   mkApp (coq_Right (), [|idx|])
 let mk_end () = coq_End ()
 
+let retype c gl = 
+  let sigma, ty = Tacmach.pf_apply Typing.e_type_of gl c in
+    Refiner.tclEVARS sigma gl
+
 (* Builds a Coq varmap corresponding to an environment *)
 let varmap_of_vars ty c iter =
   let node, empty = coq_Node (), mkApp (coq_Empty (), [|ty|]) in
@@ -303,7 +307,7 @@ module PEnv = Env (
 module TyEnv = Env (
   struct
     let size = 13
-    let ty () = mkType (Univ.fresh_local_univ ())
+    let ty () = mkType (Universes.new_univ (Global.current_dirpath ()))
     let d = None
   end)
 
@@ -495,7 +499,7 @@ let rec reify env with_terms acc frm =
 		let acc1, rf1 = reify acc f1 in
 		let acc2, rf2 = reify acc1 f2 in
 		acc2, Iff (rf1, rf2)
-	    | [t;a;b] when with_terms && eq_constr hs (build_coq_eq ()) ->
+	    | [t;a;b] when with_terms && Globnames.is_global (build_coq_eq ()) hs ->
 		let ty, ra = reify_term env a in
 		let _, rb = reify_term env b in
 		(t, ty, a, b, ra, rb)::acc, FEq (ra, rb)
@@ -565,7 +569,9 @@ let print_props vm_name gl =
     let n id =
       Names.Name (Names.id_of_string ((Names.string_of_id id)^"_reif")) in
     tclTHENSEQ
-      (List.map (fun (id, c) -> letin_tac None (n id) c None onConcl) lch) in
+      (List.map (fun (id, c) -> 
+	tclTHEN (retype c)
+	  (letin_tac None (n id) c None onConcl)) lch) in
   let tac =
     tclTHEN tacch (tclIDTAC_MESSAGE (lid ++ senv ++ sty ++ ssymb ++ srews)) in
   let v = PEnv.to_varmap () in
@@ -573,11 +579,12 @@ let print_props vm_name gl =
   let vsy = TEnv.to_varmap vtypes_name in
   let vm = mk_varmaps varmap_name vtypes_name vsymbols_name
   in
-    (tclTHEN (letin_tac None (Names.Name varmap_name) v None onConcl)
-       (tclTHEN (letin_tac None (Names.Name vtypes_name) vty None onConcl)
-	  (tclTHEN (letin_tac None (Names.Name vsymbols_name) vsy None onConcl)
-	     (tclTHEN (letin_tac None (Names.Name vm_name) vm None onConcl)
-		tac)))) gl
+    tclTHENLIST [retype v; retype vty; retype vsy; retype vm;
+		 letin_tac None (Names.Name varmap_name) v None onConcl;
+		 letin_tac None (Names.Name vtypes_name) vty None onConcl;
+		 letin_tac None (Names.Name vsymbols_name) vsy None onConcl;
+		 letin_tac None (Names.Name vm_name) vm None onConcl;
+		 tac] gl
 
 let quote_props vm_name gl =
   Coqlib.check_required_library ["Coq";"quote";"Quote"];
@@ -604,11 +611,12 @@ let quote_props vm_name gl =
   let vty = TyEnv.to_varmap () in
   let vsy = TEnv.to_varmap vtypes_name in
   let vm = mk_varmaps varmap_name vtypes_name vsymbols_name in
-  (tclTHEN (letin_tac None (Names.Name varmap_name) v None onConcl)
-     (tclTHEN (letin_tac None (Names.Name vtypes_name) vty None onConcl)
-	(tclTHEN (letin_tac None (Names.Name vsymbols_name) vsy None onConcl)
-	   (tclTHEN (letin_tac None (Names.Name vm_name) vm None onConcl)
-	      tacch)))) gl
+    tclTHENLIST [retype v; retype vty; retype vsy; retype vm;
+		 letin_tac None (Names.Name varmap_name) v None onConcl;
+		 letin_tac None (Names.Name vtypes_name) vty None onConcl;
+		 letin_tac None (Names.Name vsymbols_name) vsy None onConcl;
+		 letin_tac None (Names.Name vm_name) vm None onConcl;
+		 tacch] gl
 
 let quote_everything vm_name gl =
   Coqlib.check_required_library ["Coq";"quote";"Quote"];
@@ -647,9 +655,9 @@ let quote_everything vm_name gl =
       tclTHEN (apply rw) (tclTHEN simpl_in_concl (Proofview.V82.of_tactic reflexivity)) in
     let cut =
       mkApp (coq_iff (), [|
-	       mkApp (build_coq_eq (), [|t; a; b|]);
+	       mkApp (Universes.constr_of_global (build_coq_eq ()), [|t; a; b|]);
 	       mk_teq vtypes_name vsymbols_name cra crb |]) in
-      tclTHEN (Proofview.V82.of_tactic (assert_by (Names.Name r) cut (Proofview.V82.tactic byapp)))
+      tclTHEN (tclTHEN (retype cut) (Proofview.V82.of_tactic (assert_by (Names.Name r) cut (Proofview.V82.tactic byapp))))
 	(tclTHEN (Proofview.V82.of_tactic (Equality.general_rewrite_in
 		    true AllOccurrences false true id (mkVar r) false))
 	   (clear [r]))
@@ -665,11 +673,12 @@ let quote_everything vm_name gl =
     tclTHENSEQ (List.map (fun ((id, c, _) as e) ->
 			    tclTHEN (tclTHENSEQ (rews e))
 			      (convert_hyp (id, None, c))) lch) in
-  (tclTHEN (letin_tac None (Names.Name varmap_name) v None onConcl)
-     (tclTHEN (letin_tac None (Names.Name vtypes_name) vty None onConcl)
-	(tclTHEN (letin_tac None (Names.Name vsymbols_name) vsy None onConcl)
-	   (tclTHEN (letin_tac None (Names.Name vm_name) vm None onConcl)
-	      tacch)))) gl
+    tclTHENLIST [retype v; retype vty; retype vsy; retype vm;
+		 letin_tac None (Names.Name varmap_name) v None onConcl;
+		 letin_tac None (Names.Name vtypes_name) vty None onConcl;
+		 letin_tac None (Names.Name vsymbols_name) vsy None onConcl;
+		 letin_tac None (Names.Name vm_name) vm None onConcl;
+		 tacch] gl
 
 
 (* ERGO REIFY, NEW VERSION *)
@@ -790,11 +799,11 @@ let rec print_constr fmt c =
 	(string_of_name name) f typ f constr f constr'
   | App (constr, constr_array) ->
       fprintf fmt "%a @ (%a)" f constr (print_array f ", " "") constr_array
-  | Const const ->
+  | Const (const, u) ->
       fprintf fmt "constante %s" (Names.string_of_con const)
-  | Ind(mult_ind, i) ->
+  | Ind((mult_ind, i), u) ->
       fprintf fmt "Ind (%a, %d)" print_kn (Names.user_mind mult_ind) i
-  | Construct ((mult_ind, i), i')->
+  | Construct (((mult_ind, i), i'), u) ->
       fprintf fmt "Constructor ((%a, %d), %d)"
 	print_kn (Names.user_mind mult_ind) i i'
   | Case (case_info, constr, constr', constr_array) ->
@@ -816,13 +825,16 @@ let rec print_constr fmt c =
 	name_a
 	(print_array f ", " "") type_a
 	(print_array f ", " "") constr_a
+  | Proj _ -> (* TODO *) ()
 
 let print_ast constr_expr =
-  let constr =
+  let constr, ctx =
     Constrintern.interp_constr Evd.empty (Global.env ()) constr_expr in
     fprintf std_formatter "%a" print_constr constr
 
 (* Toplevel Extensions *)
+
+DECLARE PLUGIN "ergo_plugin"
 
 TACTIC EXTEND print_props
   [ "print_props" ident(id) ] -> [ Proofview.V82.tactic (print_props id) ]

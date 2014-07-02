@@ -1,6 +1,6 @@
 (** This contains the implementation of a [CNF] module
    on lazy literals with n-ary constructors. *)
-Require Import Quote List Ergo OrderedType.
+Require Import Omega Quote List Ergo OrderedType.
 Require Import BinPos LLazy.
 Require Import Sets List.
 Require Import Cnf DoubleNegUtils Setoid.
@@ -377,7 +377,7 @@ Module CNFLAZYN <: CNFLAZY_INTERFACE.
       forall v f, Ergo.well_typed_formula v f ->
         ~~(finterp v f <-> interp v (mk_form f)).
     Proof.
-      intros v f; pattern f; revert f.
+      intros v.
       apply (@form_size_induction (fun f =>
         well_typed_formula v f -> ~~ (finterp v f <-> interp v (mk_form f)))). 
       intros f IH Hwt; destruct f; inversion_clear Hwt; unfold interp; simpl.

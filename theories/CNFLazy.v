@@ -5,6 +5,7 @@ Require Import BinPos LLazy.
 Require Import Sets.
 Require Import Cnf DoubleNegUtils Setoid.
 Require Export CNFLazyCommon.
+Require Import Omega.
 
 (** * The module [CNFRAW] 
    

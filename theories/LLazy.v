@@ -2,6 +2,7 @@
 Require Import Quote List Ergo Containers.OrderedType.
 Require Import BinPos Literal.
 Require Export Index DistrNeg.
+Require Import Omega.
 
 Ltac discr := intros; discriminate.
 
@@ -320,6 +321,7 @@ Module LLAZYFY (L : LITERALBASE) <: LITERAL.
   Module Import RAW := RAW L.
 
   Definition negation := distr_neg mk_not.
+  Arguments In {A} a !l.
 
   (** The *big* lemma that states that negation has the
      meaning we have in mind. Its proof is in [DistrNeg]. *)
@@ -570,7 +572,7 @@ Module LLAZYFY (L : LITERALBASE) <: LITERAL.
   Instance t_OT : OrderedType t := {
     _eq := eq;
     _lt := lt;
-    OT_Equivalence := Build_Equivalence _ _ eq_refl eq_sym eq_trans;
+    OT_Equivalence := @Build_Equivalence _ _ eq_refl eq_sym eq_trans;
     OT_StrictOrder := Build_StrictOrder _ _ _ _ lt_trans lt_not_eq;
     _cmp := compare_
   }.
@@ -634,9 +636,12 @@ Module LLAZYFY (L : LITERALBASE) <: LITERAL.
     clear IHpos0.
     set (Ha_weak := (fun t0 : RAW.t_ =>
          Hx_weak a t0
-           (or_introl
-              (In a pos0) (refl_equal a)))).
-    fold Ha_weak; clearbody Ha_weak; clear Hx_weak.
+           (or_introl (In a _) (Logic.eq_refl)))) in |- *.
+    fold (In a pos0) in *.
+    change ((fun t0 : RAW.t_ =>
+         Hx_weak a t0
+           (or_introl (In a _) (Logic.eq_refl)))) with Ha_weak.
+    clearbody Ha_weak; clear Hx_weak.
     set (Ha'_weak := (fun t0 : RAW.t_ =>
          Hy_weak a t0
            (or_introl
@@ -662,8 +667,10 @@ Module LLAZYFY (L : LITERALBASE) <: LITERAL.
     set (Ha_weak := (fun t0 : RAW.t_ =>
          Hx_weak a t0
            (or_introl
-              (In a pos) (refl_equal a)))).
-    fold Ha_weak; clearbody Ha_weak; clear Hx_weak.
+              (In a pos) (refl_equal a)))) in *.
+    change (fun t0 : RAW.t_ => Hx_weak a t0 (or_introl Logic.eq_refl))
+           with Ha_weak in |- *.
+    clearbody Ha_weak; clear Hx_weak.
     induction a; simpl; constructor. reflexivity.
     apply IHa.
     apply IHpos.
@@ -680,7 +687,6 @@ Module LLAZYFY (L : LITERALBASE) <: LITERAL.
     intros [x Hx]; destruct x; unfold size; simpl; auto.
     inversion Hx; unfold llsize in H3; rewrite H3; auto.
   Qed.
-
   Fixpoint lsize (l : list t) := 
     match l with
       | nil => O
@@ -825,12 +831,12 @@ Module LLAZYFY (L : LITERALBASE) <: LITERAL.
       clear H H0 H2; revert Hpos; subst; clear; intro Hpos.
       intros P P' HP' HP; rewrite eqlist2_to_raw.
       refine (eqlist_trans _ _ (eqlist_trans _ _ _) _ _ _ HP' _).
-      apply transitivity.
+      apply (@transitivity _ _ _).
       unfold negation; apply eqlist_sym in HP.
       2:(apply eqlist_sym; symmetry; auto).
       refine (eqlist_trans _ _ (eqlist_trans _ _ _) _ _ _
         (DistrNeg.distr_neg_m _ _ HP) _).
-      apply transitivity.
+      apply (@transitivity _ _ _).
       intros; congruence.
       apply eqlist_sym; [apply eqlist_sym; symmetry; auto |].
       apply negation_compose.
