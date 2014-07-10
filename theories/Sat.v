@@ -3,11 +3,16 @@
    and completeness. It also contains a naive but functional 
    proof search function that implements our DPLL system. 
 *)
+
 Require Import Arith Bool List.
 Require Import DoubleNegUtils Cnf.
 Require Import Semantics Env.
 Require SetProperties. Module Props := SetProperties.
 Require SetEqProperties. Module EProps := SetEqProperties.
+
+(** Cannot Require Import Omega because the notations for positive conflict
+    with the { C ~ D } notation in sets. *)
+Declare ML Module "omega_plugin".
 
 (** * The main functor [SAT] *)
 Module SAT (CNF : CNF)(Import E : ENV_INTERFACE CNF).
@@ -66,7 +71,7 @@ Module SAT (CNF : CNF)(Import E : ENV_INTERFACE CNF).
       derivable (G1 |- (cfl (L.expand l)) ++ D) ->
       derivable (G2 |- (cfl (L.expand (L.mk_not l))) ++ D)->
       derivable (G |- D).
-  
+
   (** ** Correctness of the inference rules *)
   (** The first thing we want to do is prove the soundness of our
      derivation system, ie. that if a sequent is derivable, then

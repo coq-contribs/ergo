@@ -1589,7 +1589,7 @@ Section ZEntailment.
       term_of_R p1 [+] [Qfloor k] [*] term_of_R p2.
   Proof.
     intros [p1 wf1] k [p2 wf2] Hp1'' Hp2'' Hk; unfold term_of_R; simpl.
-    destruct (RAW.addk_dec p1 k p2); simpl fst in *; simpl snd in *.
+    destruct (RAW.addk_dec p1 k p2); simpl @fst in *; simpl @snd in *.
     rewrite Hknul; simpl; rewrite Zdiv_1_r; mring.
     set (G := (fun v qv acc => [Qfloor qv][*]v[+]acc)) in *.
 
@@ -2167,7 +2167,7 @@ Section ZEntailment.
       mk_term c p' (term_of_R p) === addk p' c p.
     Proof.
       intros [[cp mp] wf] c p' His' HM'.
-      unfold term_of_R; simpl coef_of; simpl snd.
+      unfold term_of_R; simpl coef_of; simpl @snd.
       assert (Hcp : isZ cp) by (exact (His' None)).
       assert (His : forall v q, MapsTo v q mp -> isZ q).
       intros. assert (R := His' (Some v)); simpl in R.
@@ -2223,7 +2223,7 @@ Section ZEntailment.
       intro abs; apply H1; constructor; auto.
       destruct (eq_dec None (Some k)). inversion H1. simpl; red; ring.
     Qed.
-    intros; unfold make; rewrite mk_term_of_R by assumption.
+    intros; unfold make; rewrite mk_term_of_R by assumption. 
     intro z; rewrite addk_co, P0_co; red; ring.
   Qed.
       

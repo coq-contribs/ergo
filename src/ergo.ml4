@@ -705,7 +705,9 @@ let build_conjunction finalid gl =
 			    ))
 	    (mkVar ida, hypa, [ida]) q
   in
-    (tclTHEN (Proofview.V82.of_tactic (pose_proof (Names.Name finalid) conj)) (clear lids)) gl
+    (tclTHEN (retype conj)
+       ((tclTHEN (Proofview.V82.of_tactic (pose_proof (Names.Name finalid) conj)) (clear lids))))
+       gl
 
 let ergo_reify f_id reif_id vm_id gl =
   Coqlib.check_required_library ["Coq";"quote";"Quote"];
@@ -717,7 +719,8 @@ let ergo_reify f_id reif_id vm_id gl =
   let vty_id = fresh "_vtypes__v" in
   let vsy_id = fresh "_vsymbols__v" in
   let let_def id c =
-    letin_tac None (Names.Name id) c None onConcl in
+    tclTHEN (retype c) (letin_tac None (Names.Name id) c None onConcl)
+  in
   let let_defs lid lc =
     tclTHENSEQ (List.map2 let_def lid lc) in
   let fty = pf_get_hyp_typ gl f_id in
