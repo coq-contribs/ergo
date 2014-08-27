@@ -652,7 +652,7 @@ let quote_everything vm_name gl =
       mk_replace vtypes_name vsymbols_name (constr_of_ty ty)
 	a b cra crb in
     let byapp =
-      tclTHEN (apply rw) (tclTHEN simpl_in_concl (Proofview.V82.of_tactic reflexivity)) in
+      tclTHEN (Proofview.V82.of_tactic (apply rw)) (tclTHEN simpl_in_concl (Proofview.V82.of_tactic reflexivity)) in
     let cut =
       mkApp (coq_iff (), [|
 	       mkApp (Universes.constr_of_global (build_coq_eq ()), [|t; a; b|]);
@@ -746,7 +746,7 @@ let ergo_reify f_id reif_id vm_id gl =
 let valid_prepare gl =
   let tac =
     try (Coqlib.check_required_library ["Coq";"Logic";"Classical_Prop"];
-	 apply (coq_NNPP ()))
+	Proofview.V82.of_tactic (apply (coq_NNPP ())))
     with _ ->
       let msg =
 	(str  "To use [valid] in order to prove the validity\n"

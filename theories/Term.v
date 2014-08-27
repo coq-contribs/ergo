@@ -709,10 +709,10 @@ Section CanonicalStructure.
     forall a a' q q', eq a a' -> eq_terms q q' -> eq_terms (a::q) (a'::q').
 
   Property eq_terms_refl : forall l, eq_terms l l.
-  Proof. induction l; constructor (auto using eq_refl). Qed.
+  Proof. induction l; constructor; auto using eq_refl. Qed.
   Property eq_terms_sym : forall l l', eq_terms l l' -> eq_terms l' l.
   Proof.
-    intros l l' H; induction H; subst; constructor (auto using eq_sym).
+    intros l l' H; induction H; subst; constructor; auto using eq_sym.
   Qed.
   Property eq_terms_trans : forall l l' l'',
     eq_terms l l' -> eq_terms l' l'' -> eq_terms l l''.
