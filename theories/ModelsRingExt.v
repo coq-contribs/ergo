@@ -414,7 +414,7 @@ Section WithRelation.
       induction H using rel_at_mutual_ind with
         (P := fun p t u H => rel_at p u t)
         (P0 := fun n p lt lu H => rel_at_terms n p lu lt);
-        constructor (auto).
+        constructor; auto.
     Qed.
     apply rel_at_sym; assumption.
   Qed.
@@ -460,7 +460,7 @@ Section WithRelation.
           rel_at_terms (length pre) p
           (pre ++ (t :: post)) (pre ++ (u :: post)).
       Proof.
-        induction pre; intros; simpl in *; constructor (auto).
+        induction pre; intros; simpl in *; constructor; auto.
       Qed.
       constructor 2; apply rel_at_terms_pre; assumption.
       assumption.
@@ -505,14 +505,14 @@ Section WithRelation.
       induction H using rel_at_mutual_ind with
         (P := fun p t v H => mext t v)
         (P0 := fun n p lt lv H => mext_terms lt lv) (p := p).
-      constructor (assumption).
-      constructor (assumption).
-      constructor (auto). clear; induction l; constructor (auto using mext_refl).
+      constructor; assumption.
+      constructor; assumption.
+      constructor; auto. clear; induction l; constructor; auto using mext_refl.
       constructor; auto; apply mext_refl.
     refine (smallest_closure _ 
       linked_refl linked_sym linked_trans linked_congr _ t u H).
     intros; exists (nil :: nil).
-    constructor 2 with u0; constructor (assumption).
+    constructor 2 with u0; constructor; assumption.
   Qed.
 
   (** So now we have an alternative, equivalent, characterization of the
@@ -678,10 +678,10 @@ End GenericCongrClosure.
 (*       (P := fun p u v H => rel_at S p u v \/ rel_at T p u v) *)
 (*       (P0 := fun n p lu lv H =>  *)
 (*         rel_at_terms S n p lu lv \/ rel_at_terms T n p lu lv). *)
-(*     rewrite Hiff in r; destruct r; [left | right]; constructor (assumption). *)
-(*     destruct IHrel_at; [left | right]; constructor (assumption). *)
-(*     destruct IHrel_at; [left | right]; constructor (assumption). *)
-(*     destruct IHrel_at; [left | right]; constructor (assumption). *)
+(*     rewrite Hiff in r; destruct r; [left | right]; constructor; assumption. *)
+(*     destruct IHrel_at; [left | right]; constructor; assumption. *)
+(*     destruct IHrel_at; [left | right]; constructor; assumption. *)
+(*     destruct IHrel_at; [left | right]; constructor; assumption. *)
 (*   Qed. *)
 
 (*   (* Si  t <-> u, t bien typé et u mal typé,  *)
@@ -708,8 +708,8 @@ End GenericCongrClosure.
 (*     intros u v; split; intro H. *)
 (*     destruct H; [ left | right; left | right; right ]; auto. *)
 (*     exists ty; exists Hu; exists Hv; assumption. *)
-(*     destruct H. constructor (assumption). *)
-(*     destruct H. constructor (assumption). *)
+(*     destruct H. constructor; assumption. *)
+(*     destruct H. constructor; assumption. *)
 (*     destruct H as [ty [x [y H]]]. *)
 (*     constructor 3 with ty x y; assumption. *)
 (*   Qed. *)
@@ -907,7 +907,7 @@ End GenericCongrClosure.
 (*       (cut Z; [intro cut; destruct X; exact cut |]) end. *)
 (*     constructor; constructor 2 with t; assumption. *)
 (*     destruct (is_ring_term_dec (app f lt)); constructor. *)
-(*     constructor (assumption). *)
+(*     constructor; assumption. *)
 (*     intro abs; inversion abs; subst; auto. exact (Hsubring _ H1 H2). *)
 (*     constructor; intros; contradiction. *)
 (*     intros; simpl; destruct H. *)
@@ -1120,16 +1120,16 @@ Axiom eq_wt_iff : forall M t u,
 Theorem eq_ring : forall M, @Ring_theory.ring_theory 
   term ([0]) ([1]) tplus tmult tminus topp (eq M).
 Proof.
-  intros; constructor; intros; try (apply mext_rule; constructor (auto));
-    (apply mext_sym; apply mext_rule; constructor (auto)).
+  intros; constructor; intros; try (apply mext_rule; constructor; auto);
+    (apply mext_sym; apply mext_rule; constructor; auto).
 Qed.
 Theorem eq_integral : forall M k u v, 
   eq M ([k][*]u) ([k][*]v) -> k =/= 0%Z -> eq M u v.
 Proof.
   intros.
   apply eq_trans with (([k][*]u)[/][k]).
-  apply mext_rule; constructor (assumption).
+  apply mext_rule; constructor; assumption.
   apply eq_trans with (([k][*]v)[/][k]).
-  apply eq_congr; repeat constructor (auto).
-  apply mext_sym; apply mext_rule; constructor (assumption).
+  apply eq_congr; repeat constructor; auto.
+  apply mext_sym; apply mext_rule; constructor; assumption.
 Qed.
