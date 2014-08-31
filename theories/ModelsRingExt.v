@@ -1130,6 +1130,6 @@ Proof.
   apply eq_trans with (([k][*]u)[/][k]).
   apply mext_rule; constructor; assumption.
   apply eq_trans with (([k][*]v)[/][k]).
-  apply eq_congr; repeat constructor; auto.
+  apply eq_congr; repeat (constructor; auto).
   apply mext_sym; apply mext_rule; constructor; assumption.
 Qed.
