@@ -368,7 +368,7 @@ Section WithVars.
     rewrite is_compare_m with k k' 0 0 Eq Eq; auto.
     destruct (eq_dec k' 0) as [E|N].
     exact Hp2.
-    inversion Hp2; subst; simpl; constructor (auto).
+    inversion Hp2; subst; simpl; constructor; auto.
     apply addk_m_m; auto; apply add_m; auto.
   Qed.
 
@@ -479,7 +479,7 @@ Section WithVars.
   Proof.
     intros; unfold addk.
     destruct (eq_dec k 0).
-    constructor (auto).
+    constructor; auto.
     destruct (addk_m_dec (snd p1) k (snd p2)).
     constructor 2; auto.
   Qed.  
@@ -505,7 +505,7 @@ Section WithVars.
     add_monome_spec t c p (add_monome t c p).
   Proof.
     intros; unfold add_monome.
-    destruct (eq_dec c 0) as [E|N]; constructor (auto).
+    destruct (eq_dec c 0) as [E|N]; constructor; auto.
     destruct (addk_m_dec (snd p) c ([][t <- 1])).
     intros; rewrite Haddk_poly.
     intros; split; simpl; intro H; inversion H; subst; clear H.
@@ -621,7 +621,7 @@ Section WithVars.
       addk_spec' p1 k p2 rm.
   Property addk_dec' : forall p1 k p2, addk_spec' p1 k p2 (addk p1 k p2).
   Proof.
-    intros; destruct (addk_dec p1 k p2); constructor (auto).
+    intros; destruct (addk_dec p1 k p2); constructor; auto.
     rewrite Hknul, Qmult_0_l, Qplus_0_r; reflexivity.
     intro t; rewrite Hknul, Qmult_0_l, Qplus_0_r; reflexivity.
     intros; unfold coef_of; simpl.
@@ -958,7 +958,7 @@ Section WithVars.
     inversion_clear H2.
     inversion H3.
     rewrite is_compare_m with b0 d0 1 1 Eq Eq; auto.
-    destruct (eq_dec d0 1); constructor (auto).
+    destruct (eq_dec d0 1); constructor; auto.
     constructor.
   Qed.
 
@@ -1201,7 +1201,7 @@ Module FULL.
       rewrite add_eq_o; auto.
       destruct t'; auto.
       rewrite add_neq_o; auto.
-      intro abs; apply H; constructor (auto).
+      intro abs; apply H; constructor; auto.
     Qed.
  
     CoInductive mult_spec (c : Q) (p : poly) : poly -> Prop :=
@@ -1271,7 +1271,7 @@ Module FULL.
       destruct t' as [t' |].
       assert (H := Hadd_monome_poly t'); clear Hadd_monome_poly.
       destruct (eq_dec t t'); destruct (eq_dec (Some t) (Some t')); auto.
-      contradiction H1; constructor (auto).
+      contradiction H1; constructor; auto.
       inversion H1; order.
       destruct (eq_dec (Some t) None).
       inversion H.
@@ -1494,7 +1494,7 @@ Module FULL.
     Proof.
       repeat intro; unfold leaves.
       apply RAW.fold_m; auto.
-      repeat intro; constructor (auto).
+      repeat intro; constructor; auto.
       assert (He:RAW.embed x0 === RAW.embed y0) by (exact (RAW.embed_m H0)).
       rewrite <- RAW.wf_equiv_iff in He; auto using RAW.Wf_embed.
       destruct x as [x px]; destruct y as [y py]; simpl.
@@ -1571,7 +1571,7 @@ Module FULL.
       constructor 1.
       intro z; rewrite 2embed_co.
       rewrite RAW.is_compare_m with z z (Some t) (Some k) Eq Eq; auto.
-      constructor (auto).
+      constructor; auto.
       constructor 2; rewrite H1; exact Z.
     Qed.
   
@@ -1606,7 +1606,7 @@ Module FULL.
       destruct t; [ | red; ring].
       rewrite empty_o; destruct d[v] as [ ]_eqn; auto.
       exact (Hchoose _ _ (find_2 Heqo)).
-      constructor (auto).
+      constructor; auto.
       unfold coef_of, RAW.coef_of; simpl.
       rewrite (find_1 H); reflexivity.
     Qed.

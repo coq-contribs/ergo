@@ -342,7 +342,7 @@ Section WithTheorySpecs.
     congruent_spec m a b (congruent m a b).
   Proof.
     intros; unfold congruent; destruct (eq_dec (m a) (m b));
-      constructor (auto).
+      constructor; auto.
   Qed.
 
   (* About range *)  

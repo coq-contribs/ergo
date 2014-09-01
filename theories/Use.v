@@ -195,7 +195,7 @@ Section WithTheorySpecs.
     inversion_clear IHl.
     destruct (r == a); constructor; constructor 2; exact Htrue.
     destruct (eq_dec r a); constructor.
-    constructor (auto). intro abs; inversion_clear abs; auto.
+    constructor; auto. intro abs; inversion_clear abs; auto.
   Qed.
   Property terms_of_merge `{ThSpecs: @TheorySpecs Th} : 
     forall m p P, ~InA _eq p (leaves P) -> 
@@ -224,7 +224,7 @@ Section WithTheorySpecs.
     destruct (InA_in_list l (leaves P)).
     apply union_2; unfold find in Hr; rewrite <- Heqp in Hp;
       rewrite Hp in Hr; auto.
-    contradiction Hfalse; rewrite Heql; constructor (auto).
+    contradiction Hfalse; rewrite Heql; constructor; auto.
     exists r; rewrite merge_find by assumption; rewrite Hp.
     destruct (eq_dec r p); [order |].
     destruct (in_list r (leaves P)); [apply union_3 |]; exact Hr.

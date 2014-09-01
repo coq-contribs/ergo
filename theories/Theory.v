@@ -290,7 +290,7 @@ Module EmptyTheory.
   Proof. constructor.
     (* - morphisms *)
     repeat intro; congruence.
-    repeat intro; simpl; constructor (auto; constructor).
+    repeat intro; simpl; constructor ;auto; constructor.
     repeat intro; simpl; rewrite H, H0.
     destruct (@eq_dec _ term_OT y y0); auto.
     rewrite H, H0; reflexivity.
