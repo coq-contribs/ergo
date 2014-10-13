@@ -606,7 +606,7 @@ let quote_props vm_name gl =
 	   | _ -> lch)
       [] (pf_hyps_types gl) in
   let tacch =
-    tclTHENSEQ (List.map (fun (id, c) -> convert_hyp (id, None, c)) lch) in
+    tclTHENSEQ (List.map (fun (id, c) -> Proofview.V82.of_tactic (convert_hyp (id, None, c))) lch) in
   let v = PEnv.to_varmap () in
   let vty = TyEnv.to_varmap () in
   let vsy = TEnv.to_varmap vtypes_name in
@@ -672,7 +672,7 @@ let quote_everything vm_name gl =
   let tacch =
     tclTHENSEQ (List.map (fun ((id, c, _) as e) ->
 			    tclTHEN (tclTHENSEQ (rews e))
-			      (convert_hyp (id, None, c))) lch) in
+			      (Proofview.V82.of_tactic (convert_hyp (id, None, c)))) lch) in
     tclTHENLIST [retype v; retype vty; retype vsy; retype vm;
 		 letin_tac None (Names.Name varmap_name) v None onConcl;
 		 letin_tac None (Names.Name vtypes_name) vty None onConcl;
