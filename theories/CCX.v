@@ -521,8 +521,9 @@ Module RAWCCX (Import T : THEORY).
   Definition assumed := I.
 
   Module Specs.
+
     Ltac simpl_mk_env :=
-      simpl mk_env in *;
+(*       simpl mk_env in *; *)
         simpl D in *; simpl G in *; simpl N in *; simpl F in *; simpl I in *.
 
     (** The invariant verified by a CC environment includes : 
