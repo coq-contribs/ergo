@@ -1,4 +1,6 @@
+Require List.
 Require Import AltErgo.
+Require GeneratorsEq.
 
 (** Examples using [dpll] *)
 Require Import GeneratorsNG.
@@ -315,7 +317,7 @@ Module Chap11.
   Theorem peirce : forall (A B : Prop), ((A -> B) -> A) -> ~A -> False.
   Proof. dpll. Qed.
   
-  Require Import List.
+  Import List.
   Lemma In_list : forall a b c, a = b -> In b ((b+1)::c::a::nil).
   Proof.
     vcc.
@@ -325,7 +327,7 @@ Module Chap11.
   Print peirce.
 
   (** Diamond *)
-  Require Import GeneratorsEq.
+  Import GeneratorsEq.
   Theorem diamond0 : diamond 0.
   Proof.
     cbv.

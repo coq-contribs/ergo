@@ -2,6 +2,7 @@
    for a [CNF] module on lazy literals. *)
 Require Import Quote Ergo Setoid.
 Require Import Adequation Env Dpll LLazy SemLazy CNFLazyCommon List.
+Require String ZArith.
 
 (** * The functor [Adequation]
 
@@ -66,7 +67,7 @@ Module LoadTactic (Import F : CNFLAZY_INTERFACE) (Import LS : DPLL F).
   Inductive Res : Type :=
   | Sat : list (LITINDEX.atom * bool) -> Res
   | Unsat.
-  Require Import String.
+  Import String.
   Definition dpll (v : varmaps) F :=
     match dpll F with
       | LS.Unsat => Unsat
@@ -139,7 +140,7 @@ Module LoadTactic (Import F : CNFLAZY_INTERFACE) (Import LS : DPLL F).
      Similarly, [print_reified_eq] simplifies an equality between reified terms
      back to the equality between original terms, and displays it with [idtac].
      *)
-  Require Import ZArith.
+  Import ZArith.
   Ltac print_reified_eq vt vs t u b :=
     let ieq := constr:(Term.eq vt vs t u) in
     let r := eval compute

@@ -1,6 +1,7 @@
 Require Import Quote List Ergo OrderedType.
 Require Import BinPos LLazy Semantics.
 Require Import Sets.
+Require TermUtils.
 
 Delimit Scope sem_scope with sem.
 Open Scope sem_scope.
@@ -131,7 +132,7 @@ Module SEMLAZY <: SEM_INTERFACE LLAZY.
     forall C, C \In D -> sat_clause_p M C.
 
   (** Extra definitions and facts about equalities, only for SEMLAZY *)
-  Require Import TermUtils.
+  Import TermUtils.
   Definition equation (a b : term) : LLAZY.t :=
     LLAZY.mk_literal (LLAZY.RAW.Lit (Some (LITINDEX.Equation a b), true))
     (LLAZY.wf_lit_lit _).

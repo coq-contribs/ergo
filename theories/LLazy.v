@@ -3,6 +3,8 @@ Require Import Quote List Ergo Containers.OrderedType.
 Require Import BinPos Literal.
 Require Export Index DistrNeg.
 Require Import Omega.
+Require OrderedTypeEx TermUtils Generate.
+
 
 Ltac discr := intros; discriminate.
 
@@ -878,7 +880,7 @@ Module LITINDEX <: LITERALBASE.
 
   (** ** [atom] as an [OrderedType] *)
   Section AtomOrderedType.
-    Require Import OrderedTypeEx TermUtils Generate.
+    Import OrderedTypeEx TermUtils Generate.
     Generate OrderedType atom. (* does not create a UOT *)
 
     Lemma atom_eq_iff : forall a a', atom_eq a a' <-> a = a'.

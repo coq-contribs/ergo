@@ -4,6 +4,7 @@
 Require Import Quote Ergo Setoid List.
 Require Import Semantics Sat (* Env *) Dpll (* SatStrategy *) SatCaml.
 Require Import LLazy CNFLazy CNFLazyN CCX EnvLazy TacticLazy.
+Require Classical.
 (* Require Import LProp CNFConcrete TacticConcrete. *)
 (* Require Import CNFAbstract TacticAbstract. *)
 (* Require Import TacticTseitin TacticTseitin2. *)
@@ -14,7 +15,7 @@ Require Import LLazy CNFLazy CNFLazyN CCX EnvLazy TacticLazy.
    to the functor that require classical reasoning and be sure that
    other tactics do not use the excluded-middle. *)
 Module K.
-  Require Import Classical.
+  Import Classical.
   Definition classic := classic.
 End K.
 

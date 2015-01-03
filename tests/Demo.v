@@ -1,6 +1,7 @@
 Require Import Quote Ergo Setoid List.
 Require Import Semantics Sat Env Dpll SatCaml.
 Require Import LLazy CNFLazy CNFLazyN CCX EnvLazy TacticLazy.
+Require Classical.
 
 (** Instantiates DPLL and loads tactic for given Env *)
 Module MakeErgo (_E : ENV_INTERFACE CNFLAZYN).
@@ -62,7 +63,7 @@ Abort.
 Module WithClassic.
   Theorem vhole2 : vhole 2.
     cbv -[not].
-    Require Import Classical.
+    Import Classical.
     ErgoSat.valid.
   Qed.
   Print Assumptions vhole2.

@@ -3,6 +3,7 @@ Require Import Sets FoldProps Env Theory.
 Require Import Bool. Open Scope bool_scope.
 Require Import Uf Use Diff.
 Require Import SemLazy LLazy.
+Require Wf Recdef Lexico.
 Import SEMLAZY.
 
 Generalizable All Variables.
@@ -420,7 +421,7 @@ Module RAWCCX (Import T : THEORY).
       destruct (eq_dec (D' v) (D' u)) as [Heq|Hneq]; [discriminate|].
       rewrite <- 2Uf.merge'_find, Htouched in Hsubst; apply Hneq; auto.
     Qed.
-    Require Import Wf Recdef Lexico.
+    Import Wf Recdef Lexico.
 
     (** Finally, our relation is well-founded *)
     Remark num_distincts_wf : 

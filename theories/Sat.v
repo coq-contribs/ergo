@@ -582,7 +582,7 @@ Module SAT (CNF : CNF)(Import E : ENV_INTERFACE CNF).
   (** In order to prove the converse of this property, namely that 
      [proof_search] only returns [Sat _] if there is no derivation,
      we need a measure of sequents. *)
-  Require Import Arith.
+  Import Arith.
   Section Measure.
     
     (** The size of a sequent is the sum of the sizes of the literals
