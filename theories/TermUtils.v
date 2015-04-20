@@ -24,8 +24,6 @@ Section Symbol_as_UOT.
       SOT_cmp := arith_domain_cmp
     }.
     Proof.
-    + eauto.
-
     + constructor.
       - exact arith_domain_lt_trans.
       - intros; intro E; change (x = y) in E; rewrite <- arith_domain_eq_iff in E.
@@ -51,7 +49,6 @@ Section Symbol_as_UOT.
       SOT_cmp := arithop_cmp
     }.
     Proof.
-    + eauto.
     + constructor.
       - exact arithop_lt_trans.
       - intros; intro E; change (x = y) in E; rewrite <- arithop_eq_iff in E.
