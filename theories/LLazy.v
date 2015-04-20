@@ -3,7 +3,7 @@ Require Import Quote List Ergo Containers.OrderedType.
 Require Import BinPos Literal.
 Require Export Index DistrNeg.
 Require Import Omega.
-Require OrderedTypeEx TermUtils Generate.
+Require Containers.OrderedTypeEx TermUtils Containers.Generate.
 
 
 Ltac discr := intros; discriminate.

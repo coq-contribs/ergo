@@ -1,6 +1,6 @@
-Require Import Sets.
-Require SetEqProperties. Module EProps := SetEqProperties.
-Require SetProperties. Module Props := SetProperties.
+Require Import Containers.Sets.
+Require Containers.SetEqProperties. Module EProps := SetEqProperties.
+Require Containers.SetProperties. Module Props := SetProperties.
 Require Import SetoidList.
 (* Require Import FMapFacts. *)
 

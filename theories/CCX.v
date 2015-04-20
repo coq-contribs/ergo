@@ -1,5 +1,5 @@
-Require Import Term TermUtils DiagProd Counting.
-Require Import Sets FoldProps Env Theory.
+Require Import Term TermUtils DiagProd Counting.Counting.
+Require Import Containers.Sets FoldProps Env Theory.
 Require Import Bool. Open Scope bool_scope.
 Require Import Uf Use Diff.
 Require Import SemLazy LLazy.

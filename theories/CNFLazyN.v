@@ -1,8 +1,8 @@
 (** This contains the implementation of a [CNF] module
    on lazy literals with n-ary constructors. *)
-Require Import Omega Quote List Ergo OrderedType.
+Require Import Omega Quote List Ergo Containers.OrderedType.
 Require Import BinPos LLazy.
-Require Import Sets List.
+Require Import Containers.Sets List.
 Require Import Cnf DoubleNegUtils Setoid.
 Require Export CNFLazyCommon.
 

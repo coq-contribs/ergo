@@ -1,5 +1,5 @@
 Require Import Quote List Ergo Term TermUtils.
-Require Import Containers.OrderedType Nfix.
+Require Import Containers.OrderedType Nfix.Nfix.
 
 Generalizable All Variables.
 

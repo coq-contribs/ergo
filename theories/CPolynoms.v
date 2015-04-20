@@ -1,5 +1,5 @@
-Require Export Maps QArith.
-Require Import MapFacts Containers.OrderedTypeEx.
+Require Export Containers.Maps QArith.
+Require Import Containers.MapFacts Containers.OrderedTypeEx.
 Require Import Theory.
 
 Generalizable All Variables.

@@ -1,5 +1,5 @@
 Require Import Env LLazy SemLazy CNFLazyCommon.
-Require Import Sets SetProperties CCX.
+Require Import Containers.Sets Containers.SetProperties CCX.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

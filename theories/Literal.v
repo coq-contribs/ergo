@@ -1,6 +1,6 @@
 (** This file defines the module type of literals. *)
-Require Import Sets SetListInstance.
-Require Export Quote Ergo OrderedType SetoidList.
+Require Import Containers.Sets Containers.SetListInstance.
+Require Export Quote Ergo Containers.OrderedType SetoidList.
 
 (* AVL by default *)
 Existing Instance SetAVLInstance.SetAVL_FSet.

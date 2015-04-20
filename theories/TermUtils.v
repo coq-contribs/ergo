@@ -1,6 +1,6 @@
 Require Import Containers.OrderedTypeEx.
 Require Export Index List Term Rational.
-Require Import Nfix Generate.
+Require Import Nfix.Nfix Containers.Generate.
 
 Require Import Eqdep_dec.
 Module DomainDT <: DecidableType.

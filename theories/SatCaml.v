@@ -1,6 +1,6 @@
 (** This file provides an efficient proof search strategy
    for our derivation system defined in [Sat]. *)
-Require Import Sets.
+Require Import Containers.Sets.
 Require Import Env Sat.
 Require Import SetoidList.
 Require Import Arith.

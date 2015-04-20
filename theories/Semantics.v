@@ -1,5 +1,5 @@
 (** This module contains the formalization of semantics. *)
-Require Import Literal Sets List.
+Require Import Literal Containers.Sets List.
 
 (** * The module type [SEM_INTERFACE] *)
 (** This module type is parameterized by a [LITERAL] module, 

@@ -1,4 +1,4 @@
-Require Import Maps Sets SetProperties.
+Require Import Containers.Maps Containers.Sets Containers.SetProperties.
 Require Import Theory TermUtils.
 
 Set Implicit Arguments.

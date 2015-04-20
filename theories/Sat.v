@@ -7,8 +7,8 @@
 Require Import Arith Bool List.
 Require Import DoubleNegUtils Cnf.
 Require Import Semantics Env.
-Require SetProperties. Module Props := SetProperties.
-Require SetEqProperties. Module EProps := SetEqProperties.
+Require Containers.SetProperties. Module Props := SetProperties.
+Require Containers.SetEqProperties. Module EProps := SetEqProperties.
 
 (** Cannot Require Import Omega because the notations for positive conflict
     with the { C ~ D } notation in sets. *)

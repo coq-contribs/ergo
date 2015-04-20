@@ -2,7 +2,7 @@
    built on top of the module [LLAZY] of lazy literals. *)
 Require Import Quote List Ergo.
 Require Import BinPos LLazy SemLazy.
-Require Import Sets.
+Require Import Containers.Sets.
 Require Import Cnf Semantics DoubleNegUtils Setoid.
 
 (** * The module type [CNFLAZY_INTERFACE]

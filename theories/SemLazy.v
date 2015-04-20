@@ -1,6 +1,6 @@
-Require Import Quote List Ergo OrderedType.
+Require Import Quote List Ergo Containers.OrderedType.
 Require Import BinPos LLazy Semantics.
-Require Import Sets.
+Require Import Containers.Sets.
 Require TermUtils.
 
 Delimit Scope sem_scope with sem.

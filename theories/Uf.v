@@ -1,4 +1,4 @@
-Require Import Sets Maps.
+Require Import Containers.Sets Containers.Maps.
 Require Import Theory.
 Require Import Term.
 
@@ -490,7 +490,7 @@ Section WithTheorySpecs.
     reflexivity.
   Qed.
   
-  Require Import SetEqProperties.
+Require Import Containers.SetEqProperties.
   Property num_classes_add : forall m a, num_classes m <= num_classes (add m a).
   Proof.
     intros; unfold num_classes.

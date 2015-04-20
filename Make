@@ -1,14 +1,9 @@
 -I src
 -R tests Tests
 -R theories Ergo
--I ../Containers/src
--R ../Containers/theories Containers
--I ../Nfix/src
--R ../Nfix/theories Nfix
--I ../Counting/src
--R ../Counting/theories Counting
-COQDOC = "$(COQBIN)coqdoc -interpolate -utf8"
-CAMLP4OPTIONS = "-loc loc"
+-I $(COQLIB)/user-contrib/Containers
+-I $(COQLIB)/user-contrib/Nfix
+-I $(COQLIB)/user-contrib/Counting
 src/arith.ml
 src/ergo.ml4
 src/ergo.mli
