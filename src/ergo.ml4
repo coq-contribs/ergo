@@ -245,7 +245,7 @@ let mk_right idx =
 let mk_end () = coq_End ()
 
 let retype c gl = 
-  let sigma, ty = Tacmach.pf_apply Typing.e_type_of gl c in
+  let sigma, ty = Tacmach.pf_apply Typing.type_of gl c in
     Refiner.tclEVARS sigma gl
 
 (* Builds a Coq varmap corresponding to an environment *)
@@ -267,7 +267,7 @@ let varmap_of_vars ty c iter =
 *)
 module type EnvSig = sig
   val size : int
-  val ty : unit -> constr
+  val ty : Evd.evar_map -> Evd.evar_map * constr
   val d : (unit -> constr) option
 end
 module Env (X : EnvSig) = struct
@@ -291,15 +291,16 @@ module Env (X : EnvSig) = struct
   let iter f = ConstrTable.iter f vars
   let fold f acc = ConstrTable.fold f vars acc
 
-  let to_varmap () =
-    varmap_of_vars (X.ty ()) !counter iter
+  let to_varmap sigma =
+    let sigma, ty = X.ty sigma in
+    sigma, varmap_of_vars ty !counter iter
 end
 
 (* Environment for propositional variables *)
 module PEnv = Env (
   struct
     let size = 97
-    let ty () = mkProp
+    let ty sigma = sigma, mkProp
     let d = Some build_coq_True
   end)
 
@@ -307,7 +308,9 @@ module PEnv = Env (
 module TyEnv = Env (
   struct
     let size = 13
-    let ty () = mkType (Universes.new_univ (Global.current_dirpath ()))
+    let ty sigma =
+      let sigma, u = Evd.new_univ_variable Evd.univ_flexible sigma in
+        sigma, mkType u
     let d = None
   end)
 
@@ -443,8 +446,8 @@ let reify_symbol h hty =
     let (ty_idx, t_idx) = TEnv.add_with_type h hty in
       U(ty_idx, t_idx)
 
-let is_constant env t =
-  let ty = Typing.type_of env Evd.empty t in
+let is_constant env sigma t =
+  let ty = Typing.unsafe_type_of env sigma t in
   let d, test =
     match ty with
       | _ when eq_constr ty (Lazy.force Arith.coq_nat) ->
@@ -459,21 +462,21 @@ let is_constant env t =
   in
     if test t then Some d else None
 
-let rec reify_term env t =
-  match is_constant env t with
+let rec reify_term env sigma t =
+  match is_constant env sigma t with
     | Some d -> TyArith d, TApp (Cst(d, t), [])
     | None ->
 	let h, l = decompose_app t in
-	let ty = Typing.type_of env Evd.empty h in
+	let ty = Typing.unsafe_type_of env sigma h in
 	let _, tyres = decompose_prod_n (List.length l) ty in
-	let lty, lreif = List.split (List.map (reify_term env) l) in
+	let lty, lreif = List.split (List.map (reify_term env sigma) l) in
 	let res = reify_type tyres in
 	let hty = reify_types res lty in
 	let hreif = reify_symbol h hty in
 	  res, TApp (hreif, lreif)
 
-let rec reify env with_terms acc frm =
-  let reify = reify env with_terms in
+let rec reify env sigma with_terms acc frm =
+  let reify = reify env sigma with_terms in
   match kind_of_term frm with
     | Prod (_,f1,f2) when not (Termops.dependent (mkRel 1) f2) ->
 	let acc1, rf1 = reify acc f1 in
@@ -500,8 +503,8 @@ let rec reify env with_terms acc frm =
 		let acc2, rf2 = reify acc1 f2 in
 		acc2, Iff (rf1, rf2)
 	    | [t;a;b] when with_terms && Globnames.is_global (build_coq_eq ()) hs ->
-		let ty, ra = reify_term env a in
-		let _, rb = reify_term env b in
+		let ty, ra = reify_term env sigma a in
+		let _, rb = reify_term env sigma b in
 		(t, ty, a, b, ra, rb)::acc, FEq (ra, rb)
 	    | _ ->  acc, FVar (PEnv.add frm)
 
@@ -515,6 +518,7 @@ let print_props vm_name gl =
   Coqlib.check_required_library ["Ergo";"Ergo"];
   PEnv.reset (); TyEnv.reset (); TEnv.reset ();
   let env = pf_env gl in
+  let sigma = project gl in
   let varmap_name =
     fresh_id [] (Names.id_of_string "_varmap__v") gl in
   let vtypes_name =
@@ -524,9 +528,9 @@ let print_props vm_name gl =
   let (lid, rews, lch) =
     List.fold_left
       (fun (acc, rews, lch) (id,ty) ->
-	 match kind_of_term (Typing.type_of env Evd.empty ty) with
+	 match kind_of_term (Typing.unsafe_type_of env sigma ty) with
 	   | Sort (Prop Null) ->
-	       let rews, rf = reify env true rews ty in
+	       let rews, rf = reify env sigma true rews ty in
 	       let s = Format.sprintf "%s : %s"
 		 (Names.string_of_id id) (string_of_form rf) in
 	       ((str s) ++ (fnl ()) ++ acc,
@@ -574,12 +578,12 @@ let print_props vm_name gl =
 	  (letin_tac None (n id) c None onConcl)) lch) in
   let tac =
     tclTHEN tacch (tclIDTAC_MESSAGE (lid ++ senv ++ sty ++ ssymb ++ srews)) in
-  let v = PEnv.to_varmap () in
-  let vty = TyEnv.to_varmap () in
+  let sigma, v = PEnv.to_varmap sigma in
+  let sigma, vty = TyEnv.to_varmap sigma in
   let vsy = TEnv.to_varmap vtypes_name in
   let vm = mk_varmaps varmap_name vtypes_name vsymbols_name
   in
-    tclTHENLIST [retype v; retype vty; retype vsy; retype vm;
+    tclTHENLIST [Refiner.tclEVARS sigma; retype v; retype vty; retype vsy; retype vm;
 		 letin_tac None (Names.Name varmap_name) v None onConcl;
 		 letin_tac None (Names.Name vtypes_name) vty None onConcl;
 		 letin_tac None (Names.Name vsymbols_name) vsy None onConcl;
@@ -591,6 +595,7 @@ let quote_props vm_name gl =
   Coqlib.check_required_library ["Ergo";"Ergo"];
   PEnv.reset (); TyEnv.reset (); TEnv.reset ();
   let env = pf_env gl in
+  let sigma = project gl in
   let varmap_name =
     fresh_id [] (Names.id_of_string "_varmap__v") gl in
   let vtypes_name =
@@ -600,18 +605,18 @@ let quote_props vm_name gl =
   let lch =
     List.fold_left
       (fun lch (id,ty) ->
-	 match kind_of_term (Typing.type_of env Evd.empty ty) with
+	 match kind_of_term (Typing.unsafe_type_of env sigma ty) with
 	   | Sort (Prop Null) ->
-	       (id, interp_of_form vm_name (snd (reify env false [] ty)))::lch
+	       (id, interp_of_form vm_name (snd (reify env sigma false [] ty)))::lch
 	   | _ -> lch)
       [] (pf_hyps_types gl) in
   let tacch =
     tclTHENSEQ (List.map (fun (id, c) -> Proofview.V82.of_tactic (convert_hyp (id, None, c))) lch) in
-  let v = PEnv.to_varmap () in
-  let vty = TyEnv.to_varmap () in
+  let sigma, v = PEnv.to_varmap sigma in
+  let sigma, vty = TyEnv.to_varmap sigma in
   let vsy = TEnv.to_varmap vtypes_name in
   let vm = mk_varmaps varmap_name vtypes_name vsymbols_name in
-    tclTHENLIST [retype v; retype vty; retype vsy; retype vm;
+    tclTHENLIST [Refiner.tclEVARS sigma; retype v; retype vty; retype vsy; retype vm;
 		 letin_tac None (Names.Name varmap_name) v None onConcl;
 		 letin_tac None (Names.Name vtypes_name) vty None onConcl;
 		 letin_tac None (Names.Name vsymbols_name) vsy None onConcl;
@@ -623,6 +628,7 @@ let quote_everything vm_name gl =
   Coqlib.check_required_library ["Ergo";"Ergo"];
   PEnv.reset (); TyEnv.reset (); TEnv.reset ();
   let env = pf_env gl in
+  let sigma = project gl in
   let varmap_name =
     fresh_id [] (Names.id_of_string "_varmap__v") gl in
   let vtypes_name =
@@ -632,16 +638,16 @@ let quote_everything vm_name gl =
   let lch =
     List.fold_left
       (fun lch (id,ty) ->
-	 match kind_of_term (Typing.type_of env Evd.empty ty) with
+	 match kind_of_term (Typing.unsafe_type_of env sigma ty) with
 	   | Sort (Prop Null) ->
-	       let rews, rf = reify env true [] ty in
+	       let rews, rf = reify env sigma true [] ty in
 	       let interp_rf = interp_of_form vm_name rf in
 		 ((id, interp_rf, rews)::lch)
 	   | _ -> lch)
       []
       (pf_hyps_types gl) in
-  let v = PEnv.to_varmap () in
-  let vty = TyEnv.to_varmap () in
+  let sigma, v = PEnv.to_varmap sigma in
+  let sigma, vty = TyEnv.to_varmap sigma in
   let vsy = TEnv.to_varmap vtypes_name in
   let vm = mk_varmaps varmap_name vtypes_name vsymbols_name in
   let rewtactic id (t, ty, a, b, ra, rb) : Proof_type.tactic =
@@ -673,7 +679,7 @@ let quote_everything vm_name gl =
     tclTHENSEQ (List.map (fun ((id, c, _) as e) ->
 			    tclTHEN (tclTHENSEQ (rews e))
 			      (Proofview.V82.of_tactic (convert_hyp (id, None, c)))) lch) in
-    tclTHENLIST [retype v; retype vty; retype vsy; retype vm;
+    tclTHENLIST [Refiner.tclEVARS sigma; retype v; retype vty; retype vsy; retype vm;
 		 letin_tac None (Names.Name varmap_name) v None onConcl;
 		 letin_tac None (Names.Name vtypes_name) vty None onConcl;
 		 letin_tac None (Names.Name vsymbols_name) vsy None onConcl;
@@ -684,10 +690,11 @@ let quote_everything vm_name gl =
 (* ERGO REIFY, NEW VERSION *)
 let build_conjunction finalid gl =
   let env = pf_env gl in
+  let sigma = project gl in
   let prop_hyps =
     List.filter
       (fun (id,ty) ->
-	 match kind_of_term (Typing.type_of env Evd.empty ty) with
+	 match kind_of_term (Typing.unsafe_type_of env sigma ty) with
 	   | Sort (Prop Null) -> true
 	   | _ -> false
       )
@@ -714,6 +721,7 @@ let ergo_reify f_id reif_id vm_id gl =
   Coqlib.check_required_library ["Ergo";"Ergo"];
   PEnv.reset (); TyEnv.reset (); TEnv.reset ();
   let env = pf_env gl in
+  let sigma = project gl in
   let fresh s = pf_get_new_id (Names.id_of_string s) gl in
   let v_id = fresh "_varmap__v" in
   let vty_id = fresh "_vtypes__v" in
@@ -724,15 +732,16 @@ let ergo_reify f_id reif_id vm_id gl =
   let let_defs lid lc =
     tclTHENSEQ (List.map2 let_def lid lc) in
   let fty = pf_get_hyp_typ gl f_id in
-    match kind_of_term (Typing.type_of env Evd.empty fty) with
+    match kind_of_term (Typing.unsafe_type_of env sigma fty) with
       | Sort (Prop Null) ->
-	  let _, rf = reify env true [] fty in
+	  let _, rf = reify env sigma true [] fty in
 	  let creif = constr_of_form rf in
-	  let v = PEnv.to_varmap () in
-	  let vty = TyEnv.to_varmap () in
+	  let sigma, v = PEnv.to_varmap sigma in
+	  let sigma, vty = TyEnv.to_varmap sigma in
 	  let vsy = TEnv.to_varmap vty_id in
 	  let vm = mk_varmaps v_id vty_id vsy_id in
-	    (let_defs
+	  tclTHEN (Refiner.tclEVARS sigma)
+	  (let_defs
 	       [v_id; vty_id; vsy_id; vm_id; reif_id]
 	       [v; vty; vsy; vm; creif]) gl
       | k ->
@@ -831,8 +840,10 @@ let rec print_constr fmt c =
   | Proj _ -> (* TODO *) ()
 
 let print_ast constr_expr =
+  let env = Global.env () in
+  let sigma = Evd.from_env env in
   let constr, ctx =
-    Constrintern.interp_constr (Global.env ()) Evd.empty constr_expr in
+    Constrintern.interp_constr env sigma constr_expr in
     fprintf std_formatter "%a" print_constr constr
 
 (* Toplevel Extensions *)

@@ -465,6 +465,12 @@ Section WithRelation.
       constructor 2; apply rel_at_terms_pre; assumption.
       assumption.
     Qed.
+      Lemma app_rev_fold : forall {A} (l l' : list A) (a : A),
+        l ++ (a :: l') = (l ++ (a ::nil)) ++ l'.
+      Proof.
+        induction l; intros; simpl in *; auto.
+        assert (IH := IHl l' a0); rewrite IH; auto.
+      Qed.
     Lemma plunge_and_flatten_linked : forall f ll n pre lt lu,
       forall3 rel_chain ll lt lu -> n = List.length pre ->
       rel_chain (plunge_and_flatten n ll)
@@ -476,12 +482,6 @@ Section WithRelation.
       constructor.
       destruct H; apply rel_chain_app with (app f (pre ++ (tcons u lt))).
       apply plunge_rel_chain; assumption.
-      Lemma app_rev_fold : forall {A} (l l' : list A) (a : A),
-        l ++ (a :: l') = (l ++ (a ::nil)) ++ l'.
-      Proof.
-        induction l; intros; simpl in *; auto.
-        assert (IH := IHl l' a0); rewrite IH; auto.
-      Qed.
       rewrite (app_rev_fold pre lt u), (app_rev_fold pre lu u).
       apply IHll; auto.
       rewrite app_length; simpl; omega.
