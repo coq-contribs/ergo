@@ -30,7 +30,7 @@ Theorem hole2_tauto : hole 2 -> False.
   Time tauto.
 Qed.
 
-Require Import Counting.
+From Counting Require Import Counting.
 Size hole2.
 Size hole2_tauto.
 Print hole2.
