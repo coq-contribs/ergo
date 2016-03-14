@@ -1,0 +1,9 @@
+[submodule "containers"]
+	path = containers
+	url = https://scm.gforge.inria.fr/anonscm/git/coq-contribs/containers.git
+[submodule "nfix"]
+	path = nfix
+	url = https://scm.gforge.inria.fr/anonscm/git/coq-contribs/nfix.git
+[submodule "counting"]
+	path = counting
+	url = https://scm.gforge.inria.fr/anonscm/git/coq-contribs/counting.git

@@ -12,6 +12,7 @@ open Flags
 open Locus
 open Locusops
 open Misctypes
+open Context.Named.Declaration
 
 type dom =
   | DomNat | DomN | DomPos | DomZ
@@ -611,7 +612,7 @@ let quote_props vm_name gl =
 	   | _ -> lch)
       [] (pf_hyps_types gl) in
   let tacch =
-    tclTHENSEQ (List.map (fun (id, c) -> Proofview.V82.of_tactic (convert_hyp (id, None, c))) lch) in
+    tclTHENSEQ (List.map (fun (id, c) -> Proofview.V82.of_tactic (convert_hyp (LocalAssum (id, c)))) lch) in
   let sigma, v = PEnv.to_varmap sigma in
   let sigma, vty = TyEnv.to_varmap sigma in
   let vsy = TEnv.to_varmap vtypes_name in
