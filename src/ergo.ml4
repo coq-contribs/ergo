@@ -659,7 +659,7 @@ let quote_everything vm_name gl =
       mk_replace vtypes_name vsymbols_name (constr_of_ty ty)
 	a b cra crb in
     let byapp =
-      tclTHEN (Proofview.V82.of_tactic (apply rw)) (tclTHEN simpl_in_concl (Proofview.V82.of_tactic reflexivity)) in
+      tclTHEN (Proofview.V82.of_tactic (apply rw)) (tclTHEN (Proofview.V82.of_tactic simpl_in_concl) (Proofview.V82.of_tactic reflexivity)) in
     let cut =
       mkApp (coq_iff (), [|
 	       mkApp (Universes.constr_of_global (build_coq_eq ()), [|t; a; b|]);
@@ -679,7 +679,7 @@ let quote_everything vm_name gl =
   let tacch =
     tclTHENSEQ (List.map (fun ((id, c, _) as e) ->
 			    tclTHEN (tclTHENSEQ (rews e))
-			      (Proofview.V82.of_tactic (convert_hyp (id, None, c)))) lch) in
+			      (Proofview.V82.of_tactic (convert_hyp (LocalAssum (id, c))))) lch) in
     tclTHENLIST [Refiner.tclEVARS sigma; retype v; retype vty; retype vsy; retype vm;
 		 letin_tac None (Names.Name varmap_name) v None onConcl;
 		 letin_tac None (Names.Name vtypes_name) vty None onConcl;
@@ -850,6 +850,9 @@ let print_ast constr_expr =
 (* Toplevel Extensions *)
 
 DECLARE PLUGIN "ergo_plugin"
+
+open Stdarg
+open Constrarg
 
 TACTIC EXTEND print_props
   [ "print_props" ident(id) ] -> [ Proofview.V82.tactic (print_props id) ]
