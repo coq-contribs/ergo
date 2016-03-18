@@ -1,4 +1,4 @@
--R containers Containers -R nfix Nfix -R counting Counting
+-R containers/theories Containers -R nfix Nfix -R counting Counting
 -I src
 -R tests Tests
 -R theories Ergo
