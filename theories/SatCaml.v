@@ -157,6 +157,8 @@ Module SATCAML
       constructor 2 with l; intuition.
     Qed.
 
+    Unset Regular Subst Tactic.
+
     Corollary reduce_correct : forall C Cred bred,
       reduce C = redSome Cred bred -> derivable (G |- {l2s Cred; D}) -> 
       derivable (G |- {l2s C; D}).
