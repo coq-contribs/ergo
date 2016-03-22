@@ -1071,8 +1071,8 @@ Section WithVars.
     contradiction (H3 (symmetry (proj1 H5))).
     split; [| rewrite H; right; auto].
     apply lt_not_eq.
-    change (lt_key (k, v) (k', v')); 
-      apply SortA_InfA_InA with _ eq_key_elt l; try solve [intuition].
+    change (lt_key (k, v) (k', v'));
+      apply SortA_InfA_InA with _ eq_key_elt l; try solve [intuition 3].
     apply KeyOrderedType.eqke_Equiv.
     apply KeyOrderedType.ltk_SO.
     intros (w,z)(w',z')(Hw,Hz) (w1,z1)(w1',z1')(Hw1,Hz1); simpl in *.
@@ -1082,7 +1082,7 @@ Section WithVars.
     inversion H4; simpl in *; subst; assumption.
     contradiction (lt_not_eq (x:=k) (y:=k')).
     change (lt_key (k, v) (k', v')); 
-      apply SortA_InfA_InA with _ eq_key_elt l; try solve [intuition].
+      apply SortA_InfA_InA with _ eq_key_elt l; try solve [intuition 3].
     apply KeyOrderedType.eqke_Equiv.
     apply KeyOrderedType.ltk_SO.
     intros (w,z)(w',z')(Hw,Hz) (w1,z1)(w1',z1')(Hw1,Hz1); simpl in *.

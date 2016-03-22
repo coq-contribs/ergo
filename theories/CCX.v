@@ -1922,7 +1922,7 @@ Module TestsDeCCXE.
 
   Ltac print e :=
     let z := eval vm_compute in (strip e) in
-    match constr:z with
+    match constr:(z) with
       | (?G,?D,?N,?F,?I) =>
         idtac "Use : " G;
         idtac "UF : " D;
@@ -2044,7 +2044,7 @@ Module TestsDeCCXA.
 
   Ltac print e :=
     let z := eval vm_compute in (strip e) in
-    match constr:z with
+    match constr:(z) with
       | (?G,?D,?N,?F,?I) =>
         idtac "Use : " G;
         idtac "UF : " D;

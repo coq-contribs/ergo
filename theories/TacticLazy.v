@@ -156,9 +156,9 @@ Module LoadTactic (Import F : CNFLAZY_INTERFACE) (Import LS : DPLL F).
         index_eq index_ind index_rect sym_eq
       ] 
       in ieq in
-      match constr:r with
+      match constr:(r) with
         | Some (existT _ _ ?x) = Some (existT _ _ ?y) =>
-          match constr:b with
+          match constr:(b) with
             | false =>
               let e := constr:(not (@Logic.eq _ x y)) in idtac e
             | true =>
@@ -167,7 +167,7 @@ Module LoadTactic (Import F : CNFLAZY_INTERFACE) (Import LS : DPLL F).
         | _ => fail 99 "Can't evaluate reified equality properly."
       end.
   Ltac print_model_aux vl vt vs m :=
-    match constr:m with
+    match constr:(m) with
       | List.nil => idtac
       | List.cons (LITINDEX.Atom ?atom,?b) ?Q =>
         let cp := constr:(LITINDEX.lookup vl atom) in
