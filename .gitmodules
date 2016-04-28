@@ -1,12 +1,12 @@
 [submodule "containers"]
 	path = containers
-	url = https://scm.gforge.inria.fr/anonscm/git/coq-contribs/containers.git
+	url = https://github.com/coq-contribs/containers.git
 	branch = trunk
 [submodule "nfix"]
 	path = nfix
-	url = https://scm.gforge.inria.fr/anonscm/git/coq-contribs/nfix.git
+	url = https://github.com/coq-contribs/nfix.git
 	branch = trunk
 [submodule "counting"]
 	path = counting
-	url = https://scm.gforge.inria.fr/anonscm/git/coq-contribs/counting.git
+	url = https://github.com/coq-contribs/counting.git
 	branch = trunk
