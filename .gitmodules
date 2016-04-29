@@ -1,0 +1,9 @@
+[submodule "containers"]
+	path = containers
+	url = https://github.com/coq-contribs/containers.git
+[submodule "nfix"]
+	path = nfix
+	url = https://github.com/coq-contribs/nfix.git
+[submodule "counting"]
+	path = counting
+	url = https://github.com/coq-contribs/counting.git
