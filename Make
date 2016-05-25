@@ -1,4 +1,3 @@
--I containers/src -R containers/theories Containers -I nfix/src -R nfix/theories Nfix -I counting/src -R counting/theories Counting
 -I src
 -R tests Tests
 -R theories Ergo
