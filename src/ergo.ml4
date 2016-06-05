@@ -667,7 +667,7 @@ let quote_everything vm_name gl =
       tclTHEN (tclTHEN (retype cut) (Proofview.V82.of_tactic (assert_by (Names.Name r) cut (Proofview.V82.tactic byapp))))
 	(tclTHEN (Proofview.V82.of_tactic (Equality.general_rewrite_in
 		    true AllOccurrences false true id (mkVar r) false))
-	   (clear [r]))
+	   (Proofview.V82.of_tactic (clear [r])))
   in
   let rews (id, _, rs) = List.map (rewtactic id) rs in
 (*   let tacch = *)
@@ -714,7 +714,7 @@ let build_conjunction finalid gl =
 	    (mkVar ida, hypa, [ida]) q
   in
     (tclTHEN (retype conj)
-       ((tclTHEN (Proofview.V82.of_tactic (pose_proof (Names.Name finalid) conj)) (clear lids))))
+       ((tclTHEN (Proofview.V82.of_tactic (pose_proof (Names.Name finalid) conj)) (Proofview.V82.of_tactic (clear lids)))))
        gl
 
 let ergo_reify f_id reif_id vm_id gl =
