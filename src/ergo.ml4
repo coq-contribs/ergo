@@ -852,7 +852,6 @@ let print_ast constr_expr =
 DECLARE PLUGIN "ergo_plugin"
 
 open Stdarg
-open Constrarg
 
 TACTIC EXTEND print_props
   [ "print_props" ident(id) ] -> [ Proofview.V82.tactic (print_props id) ]
