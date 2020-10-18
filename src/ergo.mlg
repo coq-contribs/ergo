@@ -2,7 +2,7 @@
 
 open Ltac_plugin
 open Format
-open Term
+open Constr
 open Coqlib
 open Tacmach
 open Tacticals
@@ -11,7 +11,7 @@ open Pp
 open Flags
 open Locus
 open Locusops
-open Misctypes
+open Tactypes
 open Context.Named.Declaration
 
 type dom =
@@ -100,24 +100,26 @@ let string_of_form f =
   pr_form str_formatter f;
   flush_str_formatter ()
 
+let gen_constant m l s = UnivGen.constr_of_monomorphic_global (Coqlib.find_reference m l s)
+
 (* Coq constants *)
 let coq_refl_equal () =
-  Coqlib.gen_constant "Logic" ["Init";"Logic"] "refl_equal"
+  gen_constant "Logic" ["Init";"Logic"] "refl_equal"
 let coq_iff () =
-  Coqlib.gen_constant "Logic" ["Init";"Logic"] "iff"
+  gen_constant "Logic" ["Init";"Logic"] "iff"
 let coq_bool () =
-  Coqlib.gen_constant "Datatypes" ["Init";"Datatypes"] "bool"
+  gen_constant "Datatypes" ["Init";"Datatypes"] "bool"
 let coq_true () =
-  Coqlib.gen_constant "Datatypes" ["Init";"Datatypes"] "true"
+  gen_constant "Datatypes" ["Init";"Datatypes"] "true"
 let coq_NNPP () =
-  Coqlib.gen_constant "Classical_Prop" ["Logic";"Classical_Prop"] "NNPP"
+  gen_constant "Classical_Prop" ["Logic";"Classical_Prop"] "NNPP"
 
 let mk_refl_equal a x =
   mkApp (coq_refl_equal (), [|a; x|])
 let mk_refl_true () =
   mk_refl_equal (coq_bool ()) (coq_true ())
 
-let quote_const s () = Coqlib.gen_constant "Quote" ["quote";"Quote"] s
+let quote_const s () = gen_constant "Quote" ["quote";"Quote"] s
 let coq_Empty = quote_const "Empty_vm"
 let coq_Node = quote_const "Node_vm"
 let coq_varmap_find = quote_const "varmap_find"
@@ -127,10 +129,10 @@ let coq_End = quote_const "End_idx"
 let coq_Prop = mkProp
 
 let coq_Rat () =
-  Coqlib.gen_constant_in_modules "Rational" [["Ergo";"Rational"]] "t"
+  gen_constant_in_modules "Rational" [["Ergo";"Rational"]] "t"
 
 let top_const s () =
-  Coqlib.gen_constant_in_modules "Ergo" [["Ergo";"Ergo"]] s
+  gen_constant_in_modules "Ergo" [["Ergo";"Ergo"]] s
 let coq_mk_varmaps = top_const "mk_varmaps"
 let coq_interp = top_const "finterp"
 let coq_Var = top_const "FVar"
@@ -146,7 +148,7 @@ let coq_mk_abs = top_const "Build_abstraction"
 let coq_abstraction = top_const "abstraction"
 
 let term_const s () =
-  Coqlib.gen_constant_in_modules "Term" [["Ergo";"Term"]] s
+  gen_constant_in_modules "Term" [["Ergo";"Term"]] s
 let coq_type = term_const "type"
 let coq_tycst = term_const "typeCst"
 let coq_tydef = term_const "typeDefault"
@@ -170,9 +172,9 @@ let coq_Div = term_const "Div"
 
 let coq_app = term_const "app"
 let coq_nil () =
-  Coqlib.gen_constant_in_modules "List" [["Coq";"Init";"Datatypes"]] "nil"
+  gen_constant_in_modules "List" [["Coq";"Init";"Datatypes"]] "nil"
 let coq_cons () =
-  Coqlib.gen_constant_in_modules "List" [["Coq";"Init";"Datatypes"]] "cons"
+  gen_constant_in_modules "List" [["Coq";"Init";"Datatypes"]] "cons"
 let coq_depvarmap = term_const "depvarmap"
 let coq_depvmap = term_const "mk_depvmap"
 let coq_tinterp = term_const "tinterp"

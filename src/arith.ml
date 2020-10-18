@@ -1,5 +1,4 @@
-open Term
-open Coqlib
+let gen_constant m l s = UnivGen.constr_of_monomorphic_global (Coqlib.find_reference m l s)
 
 (* arithmetic constants *)
 let gen_in_nat t = lazy (gen_constant "Datatypes" ["Init"; "Datatypes"] t)
@@ -82,6 +81,10 @@ let coq_Zmult = gen_in_Z "mul"
 (* two_p: Z -> Z *)
 (* Zsqrt_plain: Z -> Z   *)
 
+open Constr
+
+let eq_constr = Constr.equal
+
 (* reified types *)
 type 'a reified =
   | Constant of constr
@@ -151,14 +154,14 @@ let reify_positive t0 =
   in
     reif t0
 
-let rec is_N_constant t =
+let is_N_constant t =
   let hs, l = decompose_app t in
     match l with
       | [] when eq_constr hs (Lazy.force coq_N0) -> true
       | [n] when eq_constr hs (Lazy.force coq_Npos) -> is_positive_constant n
       | _ -> false
 let reify_N t0 =
-  let rec reif t =
+  let reif t =
     let hs, l = decompose_app t in
       match l with
 	| [] when eq_constr hs (Lazy.force coq_N0) -> Constant t0
@@ -170,7 +173,7 @@ let reify_N t0 =
     reif t0
 
 (* Ajouter plus de constructeurs de constantes *)
-let rec is_Z_constant t =
+let is_Z_constant t =
   let hs, l = decompose_app t in
     match l with
       | [] when eq_constr hs (Lazy.force coq_Z0) -> true
@@ -178,7 +181,7 @@ let rec is_Z_constant t =
       | [n] when eq_constr hs (Lazy.force coq_Zneg) -> is_positive_constant n
       | _ -> false
 let reify_Z t0 =
-  let rec reif t =
+  let reif t =
     let hs, l = decompose_app t in
       match l with
 	| [] when eq_constr hs (Lazy.force coq_Z0) -> Constant t0
