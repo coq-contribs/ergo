@@ -2,7 +2,7 @@
 -R tests Tests
 -R theories Ergo
 src/arith.ml
-src/ergo.ml4
+src/ergo.mlg
 src/ergo.mli
 src/ergo_plugin_mod.ml
 src/ergo_plugin.mllib
